@@ -3,6 +3,8 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import ProjectCard from '../features/projects/ProjectCard.astro';
 import Card from '../ui/Card.astro';
 
+type Project = CollectionEntry<'projects'>;
+
 const allProjects = await getCollection('projects');
 const projects = allProjects.sort(
     (a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) =>
@@ -15,7 +17,7 @@ const projects = allProjects.sort(
 
     <div class="work-grid" role="list">
         {
-            projects.map((project: CollectionEntry<'projects'>) => (
+            projects.map((project: Project) => (
                 <div role="listitem">
                     <ProjectCard project={project} />
                 </div>
