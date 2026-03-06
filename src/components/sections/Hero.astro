@@ -1,0 +1,91 @@
+---
+import profile from '@/assets/pictures/me.jpg';
+import { Image } from 'astro:assets';
+import Card from '../ui/Card.astro';
+---
+
+<Card tag="header" class="hero">
+    <div class="hero-layout">
+        <hgroup>
+            <h1>
+                <span>Federico</span>
+                <em>Maidana</em>
+            </h1>
+            <p class="location">Mar del Plata, Buenos Aires, Argentina</p>
+        </hgroup>
+
+        <div class="profile-container">
+            <Image
+                src={profile}
+                alt={`Federico Maidana`}
+                width={160}
+                height={160}
+                class="profile-img"
+                loading="eager"
+            />
+        </div>
+    </div>
+</Card>
+
+<style>
+    @scope ( .hero ) {
+        .hero-layout {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        h1 {
+            font-size: var(--text-h1);
+            font-family: var(--font-serif);
+            font-weight: 400;
+            line-height: 1;
+
+            & span {
+                color: var(--text);
+            }
+            & em {
+                color: var(--accent);
+            }
+        }
+
+        .location {
+            margin-block-start: 1.5rem;
+            font-size: var(--text-xxs);
+            letter-spacing: var(--title-spacing);
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .profile-container {
+            flex-shrink: 0;
+            padding: 4px;
+            background: color-mix(in srgb, var(--card-border) 40%, transparent);
+            border-radius: 50%;
+        }
+
+        .profile-img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+    }
+
+    @media (max-width: 600px) {
+        @scope ( .hero ) {
+            .hero-layout {
+                flex-direction: column-reverse;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .profile-img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    }
+</style>

@@ -1,0 +1,54 @@
+---
+import Card from '@/components/ui/Card.astro';
+---
+
+<Card class="about" ariaLabelledby="about-title">
+    <h2 class="about-title">Sobre mí</h2>
+
+    <div class="bio-container">
+        <p class="trajectory">Frontend → Backend.</p>
+
+        <p class="history">
+            Pasé de construir interfaces a diseñar la <strong>arquitectura del servidor</strong>.
+        </p>
+
+        <p class="current-focus">
+            Actualmente mi ecosistema principal es <strong>Rust</strong>. Diseño sistemas de <strong
+                >bajo nivel</strong
+            > para maximizar el rendimiento y garantizar la seguridad de memoria.
+        </p>
+
+        <p class="perspective">
+            Mi background en el cliente me permite diseñar <strong>APIs</strong> y arquitecturas <strong
+                >Backend</strong
+            > sin fricciones, pensadas exactamente como los equipos de producto necesitan consumirlas.
+        </p>
+    </div>
+</Card>
+
+<style>
+    @scope ( .about ) {
+        .bio-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+
+            & .trajectory {
+                font-weight: 700;
+            }
+
+            & .history,
+            & .current-focus,
+            & .perspective {
+                font-size: var(--text-sm);
+                line-height: 1.8;
+                color: color-mix(in srgb, var(--text), transparent 22%);
+
+                & strong {
+                    color: color-mix(in srgb, var(--accent), transparent 22%);
+                    font-style: italic;
+                }
+            }
+        }
+    }
+</style>

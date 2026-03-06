@@ -1,0 +1,61 @@
+---
+import Card from '../ui/Card.astro';
+---
+
+<Card tag="footer" class="contact" ariaLabelledby="contact-title">
+    <h2 class="contact-title">Contacto</h2>
+
+    <address class="contact-links">
+        <a href="mailto:fede_trabajo@proton.me" rel="author">Correo</a>
+        <a href="https://www.github.com/fedeMaidana" rel="noopener noreferrer" target="_blank"
+            >GitHub</a
+        >
+        <a
+            href="https://www.linkedin.com/in/fede-maidana/"
+            rel="noopener noreferrer"
+            target="_blank">LinkedIn</a
+        >
+    </address>
+</Card>
+
+<style>
+    @scope ( .contact ) {
+        .contact-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-style: normal;
+        }
+
+        .contact-links a {
+            position: relative;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            padding-block-end: 4px;
+        }
+
+        .contact-links a:hover {
+            color: var(--text);
+        }
+
+        .contact-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--accent);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform var(--transition-base);
+        }
+
+        .contact-links a:hover::after {
+            transform: scaleX(1);
+        }
+    }
+</style>

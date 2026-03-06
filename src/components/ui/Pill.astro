@@ -1,0 +1,53 @@
+---
+interface Props {
+    tag?: 'a' | 'div' | 'button';
+    href?: string;
+    target?: string;
+    rel?: string;
+    ariaLabel?: string;
+    class?: string;
+}
+
+const {
+    tag = Astro.props.href ? 'a' : 'div',
+    href,
+    target,
+    rel,
+    ariaLabel,
+    class: className,
+} = Astro.props;
+
+const Element = tag;
+---
+
+<Element
+    href={href}
+    target={target}
+    rel={rel}
+    aria-label={ariaLabel}
+    class:list={['pill', className]}
+>
+    <slot />
+</Element>
+
+<style>
+    .pill {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: var(--text-xs, 0.75rem);
+        color: var(--text-muted);
+        text-decoration: none;
+        pointer-events: auto;
+        transition: color 0.3s ease;
+    }
+
+    .pill :global(svg) {
+        transition: all var(--transition-base);
+    }
+
+    .pill:hover :global(svg) {
+        color: #ffffff;
+    }
+</style>

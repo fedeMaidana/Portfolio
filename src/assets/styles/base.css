@@ -1,0 +1,93 @@
+@layer base {
+    * {
+        font-variant-numeric: tabular-nums;
+    }
+
+    html {
+        color-scheme: light dark;
+        font-family: var(--font-mono);
+        font-size: 100%;
+        background-color: var(--bg);
+        color: var(--text);
+    }
+
+    body {
+        min-block-size: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        line-height: 1.6;
+        font-size: var(--text-base);
+        text-rendering: optimizeLegibility;
+
+        & > main {
+            flex: 1;
+            width: 100%;
+            max-width: 800px;
+            align-self: center;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+    }
+
+    h1,
+    h2,
+    h3 {
+        line-height: 1.1;
+        font-weight: 700;
+    }
+
+    h1 {
+        font-size: var(--text-h1);
+    }
+    h2 {
+        font-size: var(--text-h2);
+    }
+    h3 {
+        font-size: var(--text-h3);
+    }
+
+    h2[class$='-title'] {
+        font-size: var(--section-title-size);
+        font-style: italic;
+        font-weight: 600;
+        color: var(--accent);
+        margin-block-end: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: var(--section-title-spacing);
+    }
+
+    .role,
+    .location,
+    small {
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+    }
+
+    a {
+        color: var(--accent);
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: color-mix(in srgb, var(--accent) 80%, black);
+        }
+    }
+
+    code,
+    pre {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+    }
+
+    :focus-visible {
+        outline: 1px solid var(--accent);
+        outline-offset: 4px;
+        border-radius: 4px;
+        transition: outline-offset 0.2s ease-in-out;
+    }
+
+    :focus:not(:focus-visible) {
+        outline: none;
+    }
+}

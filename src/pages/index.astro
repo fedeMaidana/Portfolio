@@ -1,0 +1,27 @@
+---
+import About from '@/components/sections/About.astro';
+import Contact from '@/components/sections/Contact.astro';
+import Hero from '@/components/sections/Hero.astro';
+import Interest from '@/components/sections/Interest.astro';
+import Nav from '@/components/sections/Nav.astro';
+import Projects from '@/components/sections/Projects.astro';
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout>
+    <Nav />
+
+    <main id="main-content" tabindex="-1">
+        <Hero />
+        <About />
+        <Projects />
+        <Interest />
+        <Contact />
+    </main>
+</Layout>
+
+<style>
+    #main-content:focus {
+        outline: none;
+    }
+</style>

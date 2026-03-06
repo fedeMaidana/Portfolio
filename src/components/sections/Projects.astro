@@ -1,0 +1,35 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import ProjectCard from '../features/projects/ProjectCard.astro';
+import Card from '../ui/Card.astro';
+
+const allProjects = await getCollection('projects');
+const projects = allProjects.sort(
+    (a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) =>
+        b.data.number.localeCompare(a.data.number)
+);
+---
+
+<Card class="projects" ariaLabelledby="projects-title">
+    <h2 class="projects-title">Proyectos</h2>
+
+    <div class="work-grid" role="list">
+        {
+            projects.map((project: CollectionEntry<'projects'>) => (
+                <div role="listitem">
+                    <ProjectCard project={project} />
+                </div>
+            ))
+        }
+    </div>
+</Card>
+
+<style>
+    @scope ( .projects ) {
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+</style>

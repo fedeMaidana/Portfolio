@@ -1,0 +1,45 @@
+---
+interface Props {
+    tag?: 'section' | 'header' | 'footer';
+    id?: string;
+    ariaLabelledby?: string;
+    class?: string;
+}
+
+const { tag: Element = 'section', id, ariaLabelledby, class: className } = Astro.props;
+---
+
+<Element id={id} aria-labelledby={ariaLabelledby} class:list={['glass', 'fade-in', className]}>
+    <slot />
+</Element>
+
+<style>
+    @scope ( .glass ) {
+        :scope {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(28px) saturate(130%);
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            margin-block-end: 1.4rem;
+            transition: all var(--transition-base);
+            will-change: backdrop-filter, transform;
+        }
+
+        :scope:hover {
+            background-color: color-mix(in srgb, var(--text), transparent 94%);
+            border-color: color-mix(in srgb, var(--text), transparent 88%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    @media (max-width: 600px) {
+        @scope ( .glass ) {
+            :scope {
+                padding: 1.5rem;
+            }
+        }
+    }
+</style>

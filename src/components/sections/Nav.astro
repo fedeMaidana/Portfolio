@@ -1,0 +1,32 @@
+---
+
+---
+
+<nav aria-label="Navegación principal" class="fade-in">
+    <a href="/" class="logo" aria-label="Portafolio">Portafolio</a>
+</nav>
+
+<style>
+    @scope ( nav ) {
+        :scope {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding-block: 1.5rem;
+            padding-inline: 2rem;
+            margin-block-end: 3rem;
+            background-color: transparent;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 40px -10px color-mix(in srgb, var(--text), transparent 95%);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.27em;
+            color: var(--text);
+            text-decoration: none;
+        }
+    }
+</style>

@@ -1,0 +1,63 @@
+---
+
+---
+
+<a href="#main-content" class="skip-to-content">Saltar al contenido principal</a>
+
+<style>
+    .skip-to-content {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border-width: 0;
+        top: 0;
+        left: 0;
+
+        &:focus {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            height: auto;
+            padding: 1rem 1.5rem;
+            margin: 0;
+            overflow: visible;
+            clip: auto;
+            clip-path: none;
+            white-space: normal;
+            background-color: var(--card-bg, #1a1a1a);
+            color: var(--text, #ffffff);
+            border: 1px solid var(--accent, #ff4500);
+            border-radius: 8px;
+            z-index: 100000;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+    }
+</style>
+
+<script>
+    const initSkipLink = () => {
+        const skipLink = document.querySelector('.skip-to-content');
+        const mainContent = document.querySelector('#main-content') as HTMLElement;
+
+        if (skipLink && mainContent) {
+            skipLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                mainContent.focus();
+            });
+        }
+    };
+
+    initSkipLink();
+    document.addEventListener('astro:page-load', initSkipLink);
+</script>

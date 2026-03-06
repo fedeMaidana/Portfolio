@@ -1,0 +1,21 @@
+---
+
+---
+
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<style>
+    .noise-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        background-image: url('/pictures/noise.webp');
+        background-repeat: repeat;
+        background-size: 256px 256px;
+        opacity: 0.04;
+        transform: translate3d(0, 0, 0);
+        will-change: transform;
+        contain: strict;
+    }
+</style>

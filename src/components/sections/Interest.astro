@@ -1,0 +1,46 @@
+---
+import { getEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+
+const interestsEntry = await getEntry('interests', 'list');
+const interests = interestsEntry.data.items;
+---
+
+<Card class="interests" ariaLabelledby="interests-title">
+    <h2 class="interests-title">Intereses</h2>
+
+    <ul class="interests-list">
+        {interests.map((interest: string) => <li>{interest}</li>)}
+    </ul>
+</Card>
+
+<style>
+    @scope ( .interests ) {
+        .interests-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .interests-list li {
+            font-size: var(--text-xs, 0.75rem);
+            color: var(--text-muted);
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            border: 2px solid transparent;
+            background-color: color-mix(in srgb, var(--card-bg) 20%, transparent);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .interests-list li:hover {
+            color: var(--text);
+            border-color: color-mix(in srgb, var(--accent-hover-border) 100%, transparent);
+            background-color: color-mix(in srgb, var(--accent-hover-bg) 100%, transparent);
+            transform: translateY(-4px);
+        }
+    }
+</style>

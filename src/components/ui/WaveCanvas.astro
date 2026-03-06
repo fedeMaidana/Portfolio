@@ -1,0 +1,72 @@
+---
+
+---
+
+<div class="wave-layer" aria-hidden="true">
+    <canvas id="waveCanvas"></canvas>
+</div>
+
+<style>
+    .wave-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+
+        & canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    }
+</style>
+
+<script>
+    const cvs = document.getElementById('waveCanvas') as HTMLCanvasElement;
+
+    if (cvs && 'OffscreenCanvas' in window) {
+        const offscreen = cvs.transferControlToOffscreen();
+
+        const worker = new Worker(new URL('../../workers/wave.worker.ts', import.meta.url), {
+            type: 'module',
+        });
+
+        const getDpr = () => Math.min(window.devicePixelRatio || 1, 2);
+
+        worker.postMessage(
+            {
+                type: 'init',
+                payload: {
+                    canvas: offscreen,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    dpr: getDpr(),
+                },
+            },
+            [offscreen]
+        );
+
+        let resizeTimeout: number;
+        window.addEventListener('resize', () => {
+            window.clearTimeout(resizeTimeout);
+            resizeTimeout = window.setTimeout(() => {
+                worker.postMessage({
+                    type: 'resize',
+                    payload: {
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                        dpr: getDpr(),
+                    },
+                });
+            }, 100);
+        });
+
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        mq.addEventListener('change', (e) => {
+            worker.postMessage({ type: 'motion-preference', payload: { reduces: e.matches } });
+        });
+
+        worker.postMessage({ type: 'motion-preference', payload: { reduces: mq.matches } });
+    }
+</script>
