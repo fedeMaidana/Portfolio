@@ -21,7 +21,7 @@ import Layout from '@/layouts/Layout.astro';
 </Layout>
 
 <style>
-    #main-content:focus {
+    #main-content:focus:not(:focus-visible) {
         outline: none;
     }
 </style>

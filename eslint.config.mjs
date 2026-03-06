@@ -43,6 +43,12 @@ export default [
         },
     },
     {
+        files: ['**/\\[slug\\].astro'],
+        rules: {
+            'astro/no-set-html-directive': 'off',
+        },
+    },
+    {
         files: ['**/*.ts', '**/*.mts'],
         languageOptions: {
             parser: tseslint.parser,

@@ -24,7 +24,7 @@ const softwareSchema = getSoftwareSchema({
 });
 ---
 
-<article class="work-card">
+<article class="work-card" transition:name={`project-card-${project.slug}`}>
     <script type="application/ld+json" set:html={softwareSchema} />
     <FolderIcon class="folder-bg" />
 
@@ -62,7 +62,11 @@ const softwareSchema = getSoftwareSchema({
             }
         </div>
 
-        <a href={link} class="main-link" aria-label={`Ver detalles del proyecto ${title}`}>
+        <a
+            href={`/projects/${project.slug}`}
+            class="main-link"
+            aria-label={`Ver detalles del proyecto ${title}`}
+        >
             <ArrowIcon class="arrow" />
         </a>
     </div>

@@ -1,0 +1,134 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const projects = await getCollection('projects');
+    return projects.map((project: CollectionEntry<'projects'>) => ({
+        params: { slug: project.slug },
+        props: { project },
+    }));
+}
+
+interface Props {
+    project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+---
+
+<Layout title={`${project.data.title} | Fede Maidana`} description={project.data.description}>
+    <main class="project-container" transition:name={`project-card-${project.slug}`}>
+        <header>
+            <a href="/" class="back-link">← Volver al inicio</a>
+            <h1>{project.data.title}</h1>
+            <div class="meta">
+                <span>{project.data.category}</span>
+                {
+                    project.data.link && (
+                        <a href={project.data.link} target="_blank" rel="noopener">
+                            Ver Proyecto
+                        </a>
+                    )
+                }
+                {
+                    project.data.repoUrl && (
+                        <a href={project.data.repoUrl} target="_blank" rel="noopener">
+                            Código Fuente
+                        </a>
+                    )
+                }
+            </div>
+        </header>
+
+        <article class="prose">
+            <Content />
+        </article>
+    </main>
+</Layout>
+
+<style>
+    .project-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 8rem 2rem 4rem;
+        position: relative;
+        background-color: var(--bg, transparent);
+    }
+    .meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 3rem;
+    }
+    .back-link {
+        display: inline-block;
+        margin-bottom: 2rem;
+    }
+
+    .prose {
+        margin-top: 3rem;
+        font-size: 1.05rem;
+        line-height: 1.8;
+
+        & :global(p) {
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+        }
+
+        & :global(h2),
+        & :global(h3) {
+            font-family: var(--font-serif);
+            color: var(--text);
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+
+        & :global(ul) {
+            margin-bottom: 2.5rem;
+            padding-left: 1.5rem;
+            list-style: none;
+        }
+
+        & :global(li) {
+            position: relative;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        & :global(li::before) {
+            content: '—';
+            position: absolute;
+            left: -1.5rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        & :global(strong) {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        & :global(code) {
+            font-family: var(--font-mono);
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85em;
+            color: var(--accent);
+        }
+    }
+</style>
+
+<style
+    is:global
+    set:html={`
+    ::view-transition-group(project-card-${project.slug}) {
+        animation-duration: 0.7s;
+        animation-timing-function: var(--transition-base);
+    }
+`}
+></style>

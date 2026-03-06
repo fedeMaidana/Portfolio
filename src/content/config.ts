@@ -16,6 +16,7 @@ const projectsCollection = defineCollection({
                 'MultimediaApplication',
             ])
             .default('DeveloperApplication'),
+        tags: z.array(z.string()).optional(),
     }),
 });
 
