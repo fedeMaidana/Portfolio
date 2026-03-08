@@ -24,7 +24,7 @@ const softwareSchema = getSoftwareSchema({
 });
 ---
 
-<article class="work-card" transition:name={`project-card-${project.slug}`}>
+<article class="work-card">
     <script type="application/ld+json" set:html={softwareSchema} />
     <FolderIcon class="folder-bg" />
 
@@ -81,7 +81,7 @@ const softwareSchema = getSoftwareSchema({
             max-width: 480px;
             margin: 0 auto;
             aspect-ratio: 16 / 9;
-            transition: all var(--transition-base);
+            transition: transform var(--transition-base);
         }
 
         :scope:hover,
@@ -111,6 +111,9 @@ const softwareSchema = getSoftwareSchema({
             font-size: var(--text-sm);
             color: var(--accent);
             letter-spacing: 0.05em;
+            transition:
+                opacity 0.3s ease,
+                transform 0.3s ease;
         }
 
         .name {
@@ -124,6 +127,9 @@ const softwareSchema = getSoftwareSchema({
             color: var(--text);
             margin: 0;
             white-space: nowrap;
+            transition:
+                opacity 0.3s ease 0.04s,
+                transform 0.3s ease 0.04s;
         }
 
         .status-pill {
@@ -134,12 +140,13 @@ const softwareSchema = getSoftwareSchema({
             align-items: center;
             gap: 0.75rem;
             padding: 0.5rem 1rem;
-
             background: color-mix(in srgb, var(--card-bg) 80%, transparent);
             backdrop-filter: blur(4px);
             border: 1px solid var(--card-border);
             border-radius: 100px;
-            transition: all var(--transition-base);
+            transition:
+                all var(--transition-base),
+                opacity 0.3s ease 0.06s;
             cursor: pointer;
             z-index: 2;
         }
@@ -202,5 +209,213 @@ const softwareSchema = getSoftwareSchema({
                 gap: 0.5rem;
             }
         }
+
+        /* ─── Step 1: Content fades ─── */
+
+        :scope.is-exiting .tag,
+        :scope.is-exiting .name,
+        :scope.is-exiting .status-pill,
+        :scope.is-exiting :global(.arrow) {
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+        }
+
+        /* ─── Step 2: SVG morphs shape ─── */
+
+        :scope.is-morphing :global(.folder-bg path) {
+            d: path(
+                'M 8,0 L 152,0 Q 160,0 160,8 L 160,82 Q 160,90 152,90 L 152,90 Q 152,90 152,90 L 152,90 Q 152,90 132,90 L 8,90 Q 0,90 0,82 L 0,8 Q 0,0 8,0 L 8,0 Q 8,0 8,0 L 8,0 Q 8,0 8,0 Z'
+            );
+            stroke: transparent;
+            transition:
+                d 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+                stroke 0.3s ease;
+        }
+    }
+
+    /*
+     * Overlay styles — element is appended to <body> via JS.
+     *
+     * Default state: glass effect matching .glass cards.
+     * .is-expanding: transitions glass → solid var(--bg)
+     *                during the grow-to-viewport phase.
+     */
+
+    :global(#card-expand-overlay) {
+        background-color: var(--card-bg);
+        backdrop-filter: blur(28px) saturate(130%);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    :global(#card-expand-overlay.is-expanding) {
+        background-color: var(--bg);
+        backdrop-filter: blur(60px) saturate(100%);
+        border-color: transparent;
+        box-shadow: none;
     }
 </style>
+
+<script>
+    /*
+     * Animation timeline (more deliberate pacing):
+     *
+     * t=0ms        Content starts fading
+     * t=350ms      Content gone.
+     *              SVG morph starts (folder → rectangle, 550ms).
+     *              Glass overlay created at card position, opacity=0.
+     * t=550ms      Overlay starts fading in (200ms delay lets morph be visible).
+     * t=900ms      SVG morphed. Overlay fully opaque (glass).
+     * t=1050ms     Breathing pause (150ms).
+     * t=1050ms     Overlay expands to viewport. Glass → solid var(--bg).
+     * t=1700ms     Navigate.
+     *
+     * On destination page (astro:page-load):
+     *              Overlay fades out over 350ms instead of instant remove.
+     *              This gives .glass cards time to composite backdrop-filter.
+     *
+     * Overlay is appended to <body> (not inside .glass) because
+     * backdrop-filter creates a containing block that breaks position:fixed.
+     */
+
+    let isTransitioning = false;
+
+    function wait(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function handleCardClick(e: Event) {
+        e.preventDefault();
+        if (isTransitioning) return;
+
+        const link = e.currentTarget as HTMLAnchorElement;
+        const card = link.closest('.work-card') as HTMLElement | null;
+        if (!card) return;
+
+        const href = link.getAttribute('href');
+        if (!href) return;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            window.location.href = href;
+            return;
+        }
+
+        isTransitioning = true;
+
+        // Prefetch
+        const prefetchLink = document.createElement('link');
+        prefetchLink.rel = 'prefetch';
+        prefetchLink.href = href;
+        document.head.appendChild(prefetchLink);
+
+        // ── Step 1: Fade out content ──
+        card.classList.add('is-exiting');
+        await wait(350);
+
+        // ── Step 2: Morph SVG + create overlay simultaneously ──
+        const rect = card.getBoundingClientRect();
+
+        // Create glass overlay at card position (invisible for now)
+        const overlay = document.createElement('div');
+        overlay.id = 'card-expand-overlay';
+        Object.assign(overlay.style, {
+            position: 'fixed',
+            top: `${rect.top}px`,
+            left: `${rect.left}px`,
+            width: `${rect.width}px`,
+            height: `${rect.height}px`,
+            borderRadius: 'var(--radius-lg)',
+            zIndex: '99999',
+            pointerEvents: 'none',
+            opacity: '0',
+        });
+        document.body.appendChild(overlay);
+
+        // Start SVG morph
+        card.classList.add('is-morphing');
+
+        // Let the morph be visible for 200ms, then fade overlay in
+        await wait(200);
+
+        // Fade overlay in over 350ms (as SVG finishes morphing underneath)
+        overlay.style.transition = 'opacity 0.35s ease';
+        overlay.style.opacity = '1';
+        await wait(350);
+
+        // ── Breathing pause ──
+        await wait(150);
+
+        // ── Step 3: Expand overlay to viewport ──
+        const dur = '0.65s';
+        const ease = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
+        overlay.style.transition = [
+            `top ${dur} ${ease}`,
+            `left ${dur} ${ease}`,
+            `width ${dur} ${ease}`,
+            `height ${dur} ${ease}`,
+            `border-radius ${dur} ${ease}`,
+            `background-color ${dur} ${ease}`,
+            `backdrop-filter ${dur} ${ease}`,
+            `border-color ${dur} ${ease}`,
+            `box-shadow ${dur} ${ease}`,
+        ].join(', ');
+
+        overlay.classList.add('is-expanding');
+        Object.assign(overlay.style, {
+            top: '0px',
+            left: '0px',
+            width: '100vw',
+            height: '100vh',
+            borderRadius: '0px',
+        });
+
+        await wait(600);
+
+        // ── Step 4: Navigate ──
+        const noFlash = document.createElement('style');
+        noFlash.id = 'card-transition-override';
+        noFlash.textContent = [
+            '::view-transition-old(root) { animation: none !important; opacity: 0 !important; }',
+            '::view-transition-new(root) { animation: none !important; }',
+        ].join('\n');
+        document.head.appendChild(noFlash);
+
+        try {
+            const { navigate } = await import('astro:transitions/client');
+            navigate(href);
+        } catch {
+            window.location.href = href;
+        }
+    }
+
+    function cleanup() {
+        isTransitioning = false;
+        document.getElementById('card-transition-override')?.remove();
+
+        // Fade overlay out instead of instant remove.
+        // This keeps it visible while the new page's .glass cards
+        // composite their backdrop-filter (needs at least 1-2 frames).
+        const overlay = document.getElementById('card-expand-overlay');
+        if (overlay) {
+            overlay.style.transition = 'opacity 0.35s ease';
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 400);
+        }
+
+        document.querySelectorAll('.work-card').forEach((card) => {
+            card.classList.remove('is-exiting', 'is-morphing');
+        });
+    }
+
+    function initProjectTransitions() {
+        cleanup();
+        document.querySelectorAll<HTMLAnchorElement>('.work-card .main-link').forEach((link) => {
+            link.removeEventListener('click', handleCardClick);
+            link.addEventListener('click', handleCardClick);
+        });
+    }
+
+    initProjectTransitions();
+    document.addEventListener('astro:page-load', initProjectTransitions);
+</script>
