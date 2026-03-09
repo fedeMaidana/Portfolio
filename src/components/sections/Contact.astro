@@ -1,61 +1,161 @@
 ---
 import Card from '../ui/Card.astro';
+
+const links = [
+    { label: 'Correo', href: 'mailto:fede_trabajo@proton.me', rel: 'author', external: false },
+    {
+        label: 'GitHub',
+        href: 'https://www.github.com/fedeMaidana',
+        rel: 'noopener noreferrer',
+        external: true,
+    },
+    {
+        label: 'LinkedIn',
+        href: 'https://www.linkedin.com/in/fede-maidana/',
+        rel: 'noopener noreferrer',
+        external: true,
+    },
+];
 ---
 
 <Card tag="footer" class="contact" ariaLabelledby="contact-title">
     <h2 class="contact-title">Contacto</h2>
 
+    <p class="contact-cta">
+        ¿Tenés un proyecto en mente o querés charlar sobre <strong>Rust</strong>, arquitectura o
+        sistemas?
+    </p>
+
     <address class="contact-links">
-        <a href="mailto:fede_trabajo@proton.me" rel="author">Correo</a>
-        <a href="https://www.github.com/fedeMaidana" rel="noopener noreferrer" target="_blank"
-            >GitHub</a
-        >
-        <a
-            href="https://www.linkedin.com/in/fede-maidana/"
-            rel="noopener noreferrer"
-            target="_blank">LinkedIn</a
-        >
+        {
+            links.map(({ label, href, rel, external }, i) => (
+                <a
+                    href={href}
+                    rel={rel}
+                    target={external ? '_blank' : undefined}
+                    style={`--i: ${i}`}
+                >
+                    <span class="link-label">{label}</span>
+                    <span class="link-arrow" aria-hidden="true">
+                        {external ? '↗' : '→'}
+                    </span>
+                </a>
+            ))
+        }
     </address>
+
+    <p class="contact-footnote">
+        <span class="footnote-marker" aria-hidden="true">◆</span>
+        Respondo en menos de 24h.
+    </p>
 </Card>
 
 <style>
-    @scope ( .contact ) {
+    @scope (.contact) {
+        /* ─── CTA ─── */
+
+        .contact-cta {
+            font-size: var(--text-sm);
+            line-height: 1.7;
+            color: color-mix(in srgb, var(--text), transparent 25%);
+            max-width: 44ch;
+            margin-block-end: 1.5rem;
+
+            & strong {
+                color: var(--accent);
+                font-weight: 600;
+            }
+        }
+
+        /* ─── Links ─── */
+
         .contact-links {
             display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
+            flex-direction: column;
+            gap: 0;
             font-style: normal;
+            margin-block-end: 1.5rem;
         }
 
         .contact-links a {
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
             font-family: var(--font-mono);
             font-size: var(--text-sm);
             color: var(--text-muted);
             text-decoration: none;
-            transition: color 0.3s ease;
-            padding-block-end: 4px;
+            border-radius: var(--radius-sm);
+            transition:
+                color 0.25s ease,
+                background-color 0.25s ease,
+                padding-inline-start 0.25s ease;
+        }
+
+        .contact-links a:not(:last-child) {
+            border-bottom: 1px solid color-mix(in srgb, var(--card-border), transparent 50%);
         }
 
         .contact-links a:hover {
             color: var(--text);
+            background-color: var(--accent-hover-bg);
+            padding-inline-start: 1.25rem;
         }
 
-        .contact-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background-color: var(--accent);
-            transform: scaleX(0);
-            transform-origin: center;
-            transition: transform var(--transition-base);
+        .link-label {
+            letter-spacing: 0.02em;
         }
 
-        .contact-links a:hover::after {
-            transform: scaleX(1);
+        .link-arrow {
+            font-size: var(--text-xs);
+            color: var(--accent);
+            opacity: 0;
+            transform: translateX(-4px);
+            transition:
+                opacity 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .contact-links a:hover .link-arrow {
+            opacity: 0.7;
+            transform: translateX(0);
+        }
+
+        /* ─── Footnote ─── */
+
+        .contact-footnote {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-family: var(--font-mono);
+            font-size: var(--text-xxs);
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            opacity: 0.7;
+        }
+
+        .footnote-marker {
+            font-size: 0.4rem;
+            color: var(--accent);
+            opacity: 0.6;
+        }
+    }
+
+    @media (max-width: 600px) {
+        @scope (.contact) {
+            .contact-cta {
+                max-width: 100%;
+            }
+
+            .contact-links a {
+                padding: 0.75rem 0.75rem;
+            }
+
+            .contact-links a:hover {
+                padding-inline-start: 1rem;
+            }
         }
     }
 </style>

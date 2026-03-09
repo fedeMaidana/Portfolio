@@ -6,34 +6,97 @@ import Card from '../ui/Card.astro';
 
 <Card tag="header" class="hero">
     <div class="hero-layout">
-        <hgroup>
-            <h1>
-                <span>Federico</span>
-                <em>Maidana</em>
-            </h1>
-            <h4 class="location">Mar del Plata, Buenos Aires, Argentina</h4>
-        </hgroup>
+        <div class="hero-text">
+            <div class="status-line">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span class="status-label">Disponible para proyectos</span>
+            </div>
+
+            <hgroup>
+                <h1>
+                    <span class="first-name">Federico</span>
+                    <em class="last-name">Maidana</em>
+                </h1>
+                <p class="role">Backend Developer</p>
+            </hgroup>
+
+            <div class="meta-row">
+                <span class="location-pin" aria-hidden="true">◆</span>
+                <span class="location">Mar del Plata, Buenos Aires, Argentina</span>
+            </div>
+        </div>
 
         <div class="profile-container">
-            <Image
-                src={profile}
-                alt={``}
-                width={160}
-                height={160}
-                class="profile-img"
-                loading="eager"
-            />
+            <div class="profile-ring">
+                <Image
+                    src={profile}
+                    alt="Foto de Federico Maidana"
+                    width={160}
+                    height={160}
+                    class="profile-img"
+                    loading="eager"
+                />
+            </div>
         </div>
     </div>
 </Card>
 
 <style>
-    @scope ( .hero ) {
+    @scope (.hero) {
         .hero-layout {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 2rem;
+            gap: 2.5rem;
+        }
+
+        .hero-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* ─── Status ─── */
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: oklch(72% 0.19 145);
+            box-shadow: 0 0 6px oklch(72% 0.19 145 / 0.6);
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .status-label {
+            font-family: var(--font-mono);
+            font-size: var(--text-xxs);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: oklch(72% 0.19 145);
+        }
+
+        /* ─── Title ─── */
+
+        hgroup {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
         }
 
         h1 {
@@ -41,28 +104,62 @@ import Card from '../ui/Card.astro';
             font-family: var(--font-serif);
             font-weight: 400;
             line-height: 1;
+            display: flex;
+        }
 
-            & span {
-                color: var(--text);
-            }
-            & em {
-                color: var(--accent);
-            }
+        .first-name {
+            color: var(--text);
+            margin-inline-end: 1rem;
+        }
+
+        .last-name {
+            color: var(--accent);
+        }
+
+        .role {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            letter-spacing: var(--title-spacing);
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-block-start: 0.25rem;
+        }
+
+        /* ─── Location ─── */
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .location-pin {
+            font-size: 0.45rem;
+            color: var(--accent);
+            opacity: 0.6;
         }
 
         .location {
-            margin-block-start: 1.5rem;
             font-size: var(--text-xxs);
             letter-spacing: var(--title-spacing);
             text-transform: uppercase;
             color: var(--text-muted);
         }
 
+        /* ─── Profile ─── */
+
         .profile-container {
             flex-shrink: 0;
-            padding: 4px;
-            background: color-mix(in srgb, var(--card-border) 40%, transparent);
+        }
+
+        .profile-ring {
+            padding: 3px;
             border-radius: 50%;
+            background: linear-gradient(
+                135deg,
+                color-mix(in srgb, var(--accent), transparent 60%),
+                color-mix(in srgb, var(--card-border) 50%, transparent)
+            );
         }
 
         .profile-img {
@@ -71,11 +168,25 @@ import Card from '../ui/Card.astro';
             object-fit: cover;
             border-radius: 50%;
             display: block;
+            filter: grayscale(15%) contrast(1.04);
+            transition: filter 0.4s ease;
+        }
+
+        :scope:hover .profile-img {
+            filter: grayscale(0%) contrast(1);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        @scope (.hero) {
+            .status-dot {
+                animation: none;
+            }
         }
     }
 
     @media (max-width: 600px) {
-        @scope ( .hero ) {
+        @scope (.hero) {
             .hero-layout {
                 flex-direction: column-reverse;
                 align-items: flex-start;

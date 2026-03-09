@@ -5,7 +5,7 @@
         --bg: light-dark(oklch(98% 0.01 240), oklch(0% 0 0));
 
         --text: light-dark(oklch(15% 0.01 40), oklch(92% 0.01 40));
-        --text-muted: light-dark(oklch(60% 0.01 40), oklch(50% 0.01 40));
+        --text-muted: light-dark(oklch(60% 0.01 40), oklch(87% 0.01 271));
         --accent: light-dark(oklch(55% 0.12 210), oklch(76% 0.12 210));
 
         --accent-hover-bg: color-mix(in srgb, var(--accent), transparent 95%);
