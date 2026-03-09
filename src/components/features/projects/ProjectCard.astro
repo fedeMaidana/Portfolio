@@ -22,6 +22,22 @@ const softwareSchema = getSoftwareSchema({
     url: link !== '#' ? link : Astro.url.href,
     repoUrl,
 });
+
+let stars = 0;
+
+if (repoUrl && repoUrl.startsWith('https://github.com/')) {
+    const repoPath = new URL(repoUrl).pathname.slice(1);
+
+    try {
+        const res = await fetch(`https://api.github.com/repos/${repoPath}`);
+        if (res.ok) {
+            const data = await res.json();
+            stars = data.stargazers_count;
+        }
+    } catch {
+        throw new Error(`Error al obtener estrellas para ${repoPath}:`);
+    }
+}
 ---
 
 <article class="work-card">
@@ -31,6 +47,17 @@ const softwareSchema = getSoftwareSchema({
     <div class="card-content">
         <span class="tag" aria-hidden="true">{number}</span>
         <h3 class="name">{title}</h3>
+
+        {
+            stars >= 0 && (
+                <div class="stars-badge" aria-label={`${stars} estrellas en GitHub`}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" />
+                    </svg>
+                    <span>{stars}</span>
+                </div>
+            )
+        }
 
         <div class="status-pill">
             {
@@ -93,6 +120,32 @@ const softwareSchema = getSoftwareSchema({
         :scope:has(.main-link:focus-visible) :global(.folder-bg path) {
             fill: var(--accent-hover-bg);
             stroke: var(--accent-hover-border);
+        }
+
+        .stars-badge {
+            position: absolute;
+            top: 0.4rem;
+            right: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            background: color-mix(in srgb, var(--card-bg) 80%, transparent);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--text);
+            z-index: 2;
+            transition:
+                opacity 0.3s ease 0.02s,
+                transform 0.3s ease 0.02s;
+        }
+
+        .stars-badge svg {
+            fill: rgb(200, 159, 39); /* O podés usar un #eab308 si preferís dorado */
+            transform: translateY(-1px);
         }
 
         .card-content {
@@ -215,6 +268,7 @@ const softwareSchema = getSoftwareSchema({
         :scope.is-exiting .tag,
         :scope.is-exiting .name,
         :scope.is-exiting .status-pill,
+        :scope.is-exiting .stars-badge,
         :scope.is-exiting :global(.arrow) {
             opacity: 0;
             transform: translateY(8px);
