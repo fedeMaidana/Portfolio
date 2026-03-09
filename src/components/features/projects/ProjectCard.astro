@@ -39,7 +39,7 @@ const softwareSchema = getSoftwareSchema({
                         <span>Estás aquí</span>
                     </Pill>
                 ) : (
-                    <Pill href={link} aria-label={`Visitar web del proyecto ${title}`}>
+                    <Pill href={link} ariaLabel={`Visitar web del proyecto ${title}`}>
                         <LinkIcon class="link" aria-hidden="true" />
                     </Pill>
                 )
@@ -53,7 +53,7 @@ const softwareSchema = getSoftwareSchema({
                             href={repoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label={`Ver código fuente del proyecto ${title} en GitHub`}
+                            ariaLabel={`Ver código fuente del proyecto ${title} en GitHub`}
                         >
                             <GithubIcon class="github" aria-hidden="true" />
                         </Pill>
@@ -221,16 +221,26 @@ const softwareSchema = getSoftwareSchema({
             pointer-events: none;
         }
 
+        :scope.is-exiting :global(.folder-bg path) {
+            fill: var(--accent-hover-bg);
+            stroke: var(--accent-hover-border);
+            transition:
+                fill 0s,
+                stroke 0s;
+        }
+
         /* ─── Step 2: SVG morphs shape ─── */
 
         :scope.is-morphing :global(.folder-bg path) {
+            fill: var(--accent-hover-bg);
             d: path(
                 'M 8,0 L 152,0 Q 160,0 160,8 L 160,82 Q 160,90 152,90 L 152,90 Q 152,90 152,90 L 152,90 Q 152,90 132,90 L 8,90 Q 0,90 0,82 L 0,8 Q 0,0 8,0 L 8,0 Q 8,0 8,0 L 8,0 Q 8,0 8,0 Z'
             );
             stroke: transparent;
             transition:
                 d 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
-                stroke 0.3s ease;
+                stroke 0.3s ease,
+                fill 0s;
         }
     }
 
@@ -372,6 +382,13 @@ const softwareSchema = getSoftwareSchema({
         });
 
         await wait(600);
+
+        // Forzar overlay opaco antes de que la VT capture el snapshot
+        overlay.style.transition = 'none';
+        overlay.style.backgroundColor = 'var(--bg)';
+        overlay.style.backdropFilter = 'none';
+        card.style.visibility = 'hidden';
+        void overlay.offsetHeight; // forzar repaint sincrónico
 
         // ── Step 4: Navigate ──
         const noFlash = document.createElement('style');

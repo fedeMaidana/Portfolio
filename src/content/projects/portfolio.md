@@ -2,7 +2,7 @@
 title: 'Portafolio'
 number: '#001'
 category: 'DeveloperApplication'
-description: 'Mi portafolio personal construido con Astro. Cero JavaScript innecesario, accesibilidad real y datos estructurados para que humanos e IAs interpreten mi perfil sin ambigüedad.'
+description: 'Mi portafolio personal construido con Astro. Cero JavaScript innecesario, accesibilidad real y datos estructurados para que humanos e IAs entiendan mi perfil.'
 link: 'https://maidana.dev'
 repoUrl: 'https://github.com/fedeMaidana/Portfolio'
 tags: ['Astro', 'TypeScript', 'Bun', 'LightningCSS', 'JSON-LD']
