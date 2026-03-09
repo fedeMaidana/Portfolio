@@ -8,7 +8,7 @@ repoUrl: 'https://github.com/fedeMaidana/Portfolio'
 tags: ['Astro', 'TypeScript', 'Bun', 'LightningCSS', 'JSON-LD']
 ---
 
-Para este portafolio no se usaron plantillas genericas, ni tampoco fue un proyecto de fin de semana: a continuacion les detallo cada decision tecnica.
+Para este portafolio no se usaron plantillas genéricas, ni tampoco fue un proyecto de fin de semana: a continuación les detallo cada decisión técnica.
 
 ### Astro
 
@@ -58,6 +58,6 @@ Configuré **Husky** con **lint-staged** para que cada commit pase por **ESLint*
 
 ### Monitoreo en producción
 
-El sitio está desplegado en **Vercel**. Integré **@vercel/analytics** para entender el tráfico real y **@vercel/speed-insights** para monitorear la performance en dispositivos y conexiones reales, no solo en mi máquina con fibra óptica.
+El sitio está desplegado en **Vercel**. Integré **@vercel/analytics** para entender el tráfico real y **@vercel/speed-insights** para monitorear la performance en dispositivos y conexiones reales, no solo en mi máquina.
 
 Los headers de seguridad están configurados en `vercel.json`: Content-Security-Policy, HSTS, X-Frame-Options, y Permissions-Policy.

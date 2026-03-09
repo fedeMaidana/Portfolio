@@ -311,6 +311,7 @@ const softwareSchema = getSoftwareSchema({
 
         // ── Step 1: Fade out content ──
         card.classList.add('is-exiting');
+        card.style.viewTransitionName = 'none';
         await wait(350);
 
         // ── Step 2: Morph SVG + create overlay simultaneously ──
@@ -376,15 +377,18 @@ const softwareSchema = getSoftwareSchema({
         const noFlash = document.createElement('style');
         noFlash.id = 'card-transition-override';
         noFlash.textContent = [
-            '::view-transition-old(root) { animation: none !important; opacity: 0 !important; }',
-            '::view-transition-new(root) { animation: none !important; }',
+            '::view-transition-group(*) { animation-duration: 0s !important; }',
+            '::view-transition-old(*) { animation: none !important; opacity: 0 !important; }',
+            '::view-transition-new(*) { animation: none !important; }',
         ].join('\n');
         document.head.appendChild(noFlash);
 
         try {
+            needsCoverOnLoad = true;
             const { navigate } = await import('astro:transitions/client');
             navigate(href);
         } catch {
+            needsCoverOnLoad = false;
             window.location.href = href;
         }
     }
@@ -393,18 +397,34 @@ const softwareSchema = getSoftwareSchema({
         isTransitioning = false;
         document.getElementById('card-transition-override')?.remove();
 
-        // Fade overlay out instead of instant remove.
-        // This keeps it visible while the new page's .glass cards
-        // composite their backdrop-filter (needs at least 1-2 frames).
         const overlay = document.getElementById('card-expand-overlay');
-        if (overlay) {
-            overlay.style.transition = 'opacity 0.35s ease';
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 400);
+
+        if (overlay && needsCoverOnLoad) {
+            needsCoverOnLoad = false;
+
+            // Esperar a que el compositor aplique backdrop-filter en las .glass
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            overlay.style.transition = 'opacity 0.4s ease';
+                            overlay.style.opacity = '0';
+                            overlay.addEventListener('transitionend', () => overlay.remove(), {
+                                once: true,
+                            });
+                        }, 30);
+                    });
+                });
+            });
+        } else if (overlay) {
+            overlay.remove();
         }
+
+        needsCoverOnLoad = false;
 
         document.querySelectorAll('.work-card').forEach((card) => {
             card.classList.remove('is-exiting', 'is-morphing');
+            (card as HTMLElement).style.viewTransitionName = '';
         });
     }
 
@@ -415,6 +435,26 @@ const softwareSchema = getSoftwareSchema({
             link.addEventListener('click', handleCardClick);
         });
     }
+
+    let needsCoverOnLoad = false;
+
+    document.addEventListener('astro:before-swap', (e: any) => {
+        if (!needsCoverOnLoad) return;
+
+        const overlay = e.newDocument.createElement('div');
+        overlay.id = 'card-expand-overlay';
+        Object.assign(overlay.style, {
+            position: 'fixed',
+            inset: '0',
+            width: '100vw',
+            height: '100vh',
+            zIndex: '99999',
+            pointerEvents: 'none',
+            backgroundColor: 'var(--bg)',
+            opacity: '1',
+        });
+        e.newDocument.body.appendChild(overlay);
+    });
 
     initProjectTransitions();
     document.addEventListener('astro:page-load', initProjectTransitions);
