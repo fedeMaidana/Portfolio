@@ -13,6 +13,16 @@
         z-index: 0;
         pointer-events: none;
         overflow: hidden;
+        /*
+         * iOS Safari drops fixed-position compositing layers during
+         * momentum scroll.  translate3d(0,0,0) promotes the element
+         * to its own GPU layer so the last painted frame stays visible
+         * instead of disappearing until scroll ends.
+         */
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
 
         & canvas {
             width: 100%;

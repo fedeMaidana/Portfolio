@@ -6,12 +6,12 @@ import Card from '../ui/Card.astro';
 
 <Card tag="header" class="hero">
     <div class="hero-layout">
-        <div class="hero-text">
-            <div class="status-line">
-                <span class="status-dot" aria-hidden="true"></span>
-                <span class="status-label">Disponible para proyectos</span>
-            </div>
+        <div class="status-line">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-label">Disponible para proyectos</span>
+        </div>
 
+        <div class="hero-text">
             <hgroup>
                 <h1>
                     <span class="first-name">Federico</span>
@@ -49,6 +49,11 @@ import Card from '../ui/Card.astro';
             justify-content: space-between;
             align-items: center;
             gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-line {
+            flex-basis: 100%;
         }
 
         .hero-text {
@@ -189,14 +194,44 @@ import Card from '../ui/Card.astro';
     @media (max-width: 600px) {
         @scope (.hero) {
             .hero-layout {
-                flex-direction: column-reverse;
-                align-items: flex-start;
-                gap: 1.5rem;
+                flex-direction: column;
+                align-items: center;
+                gap: 1.25rem;
+                text-align: center;
+            }
+
+            /* Reorder: status → photo → text */
+            .status-line {
+                order: -2;
+                justify-content: center;
+            }
+
+            .profile-container {
+                order: -1;
+            }
+
+            .hero-text {
+                order: 0;
+                align-items: center;
+            }
+
+            h1 {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.15rem;
+            }
+
+            .first-name {
+                margin-inline-end: 0.5rem;
+            }
+
+            .meta-row {
+                justify-content: center;
             }
 
             .profile-img {
-                width: 100px;
-                height: 100px;
+                width: 110px;
+                height: 110px;
             }
         }
     }

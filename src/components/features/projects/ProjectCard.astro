@@ -444,20 +444,10 @@ if (repoUrl && repoUrl.startsWith('https://github.com/')) {
         card.style.visibility = 'hidden';
         void overlay.offsetHeight; // forzar repaint sincrónico
 
-        // ── Step 4: Navigate ──
-        const noFlash = document.createElement('style');
-        noFlash.id = 'card-transition-override';
-        noFlash.textContent = [
-            '::view-transition-group(*) { animation-duration: 0s !important; }',
-            '::view-transition-old(*) { animation: none !important; opacity: 0 !important; }',
-            '::view-transition-new(*) { animation: none !important; }',
-        ].join('\n');
-        document.head.appendChild(noFlash);
-
         try {
             needsCoverOnLoad = true;
             const { navigate } = await import('astro:transitions/client');
-            navigate(href);
+            navigate(href, { info: { skipVT: true } });
         } catch {
             needsCoverOnLoad = false;
             window.location.href = href;
@@ -466,7 +456,6 @@ if (repoUrl && repoUrl.startsWith('https://github.com/')) {
 
     function cleanup() {
         isTransitioning = false;
-        document.getElementById('card-transition-override')?.remove();
 
         const overlay = document.getElementById('card-expand-overlay');
 
@@ -529,4 +518,10 @@ if (repoUrl && repoUrl.startsWith('https://github.com/')) {
 
     initProjectTransitions();
     document.addEventListener('astro:page-load', initProjectTransitions);
+
+    document.addEventListener('astro:before-swap', (e: any) => {
+        if (e.info?.skipVT) {
+            e.viewTransition.skipTransition();
+        }
+    });
 </script>
