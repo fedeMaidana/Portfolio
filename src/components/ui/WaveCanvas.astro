@@ -33,7 +33,7 @@
 </style>
 
 <script>
-    import waveWorkerUrl from '@/workers/wave.worker.ts?worker&url';
+    import waveWorkerUrl from '../../workers/wave.worker.ts?url';
 
     let currentWorker: Worker | null = null;
     let resizeHandler: (() => void) | null = null;

@@ -1,4 +1,4 @@
-import type { GridConfig } from '@/workers/Types';
+import type { GridConfig } from './Types';
 
 export const CONFIG = {
     frameSkip: 2,

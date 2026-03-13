@@ -1,5 +1,5 @@
-import type { WorkerMessage } from '@/workers/Types';
-import { WaveScene } from '@/workers/WaveScene';
+import type { WorkerMessage } from './Types';
+import { WaveScene } from './WaveScene';
 
 let scene: WaveScene | null = null;
 

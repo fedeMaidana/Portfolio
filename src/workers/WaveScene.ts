@@ -1,8 +1,8 @@
-import { CONFIG } from '@/workers/Constant';
-import { SurfboardRenderer } from '@/workers/renderers/SurfBoardRenderer';
-import { WaveRenderer } from '@/workers/renderers/WaveRenderer';
-import { SurfboardModel } from '@/workers/SurfBoardModel';
-import type { GridConfig } from '@/workers/Types';
+import { CONFIG } from './Constant';
+import { SurfboardRenderer } from './renderers/SurfBoardRenderer';
+import { WaveRenderer } from './renderers/WaveRenderer';
+import { SurfboardModel } from './SurfBoardModel';
+import type { GridConfig } from './Types';
 
 export class WaveScene {
     private ctx: OffscreenCanvasRenderingContext2D;

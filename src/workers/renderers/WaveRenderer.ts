@@ -1,5 +1,5 @@
-import { MathUtils } from '@/workers/Maths';
-import type { CellRender, GridConfig } from '@/workers/Types';
+import { MathUtils } from '../Maths';
+import type { CellRender, GridConfig } from '../Types';
 
 export class WaveRenderer {
     constructor(private ctx: OffscreenCanvasRenderingContext2D) {}

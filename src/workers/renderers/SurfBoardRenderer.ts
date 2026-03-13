@@ -1,5 +1,5 @@
-import { CONFIG, SAND_MOUNDS, SURFBOARD_DATA } from '@/workers/Constant';
-import type { SurfboardModel } from '@/workers/SurfBoardModel';
+import { CONFIG, SAND_MOUNDS, SURFBOARD_DATA } from '../Constant';
+import type { SurfboardModel } from '../SurfBoardModel';
 
 const DEFAULT_COLOR: [number, number, number, number] = [210, 205, 195, 0.12];
 

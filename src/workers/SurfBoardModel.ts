@@ -1,5 +1,5 @@
-import { SURFBOARD_DATA } from '@/workers/Constant';
-import type { ColorTuple } from '@/workers/Types';
+import { SURFBOARD_DATA } from './Constant';
+import type { ColorTuple } from './Types';
 
 export interface OutlinePoint {
     row: number;
