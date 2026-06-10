@@ -1,12 +1,12 @@
 ---
 import Card from '@/components/ui/Card.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
     const projects = await getCollection('projects');
     return projects.map((project: CollectionEntry<'projects'>) => ({
-        params: { slug: project.slug },
+        params: { slug: project.id },
         props: { project },
     }));
 }
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { Content } = await project.render();
+const { Content } = await render(project);
 ---
 
 <Layout title={`${project.data.title} | Fede Maidana`} description={project.data.description}>

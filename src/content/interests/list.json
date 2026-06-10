@@ -1,3 +1,6 @@
-{
-    "items": ["Música", "Surf", "Boxeo", "Coches", "Moda", "Videojuegos", "Anime", "Snowboard"]
-}
+[
+    {
+        "id": "list",
+        "items": ["Música", "Surf", "Boxeo", "Coches", "Moda", "Videojuegos", "Anime", "Snowboard"]
+    }
+]
