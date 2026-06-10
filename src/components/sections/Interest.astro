@@ -1,9 +1,8 @@
 ---
-import { getEntry } from 'astro:content';
+import { getInterests } from '@/services/content';
 import Card from '../ui/Card.astro';
 
-const interestsEntry = await getEntry('interests', 'list');
-const interests = interestsEntry.data.items;
+const interests = await getInterests();
 ---
 
 <Card class="interests" ariaLabelledby="interests-title">

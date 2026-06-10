@@ -86,13 +86,6 @@ const { Content } = await render(project);
 </Layout>
 
 <style>
-    /*
-     * Entry animation starts after 150ms delay.
-     * The overlay from ProjectCard fades out over 350ms on astro:page-load.
-     * The 150ms delay lets the overlay start fading before content slides up,
-     * creating a reveal effect where they overlap.
-     */
-
     @keyframes slideUp {
         from {
             opacity: 0;
@@ -359,20 +352,5 @@ const { Content } = await render(project);
 </style>
 
 <script>
-    function clearContainerAnimation() {
-        const container = document.querySelector('.project-container') as HTMLElement | null;
-        if (!container) return;
-
-        container.addEventListener(
-            'animationend',
-            () => {
-                container.style.animation = 'none';
-                container.style.opacity = '1';
-            },
-            { once: true }
-        );
-    }
-
-    clearContainerAnimation();
-    document.addEventListener('astro:page-load', clearContainerAnimation);
+    import '../../scripts/projectDetail';
 </script>

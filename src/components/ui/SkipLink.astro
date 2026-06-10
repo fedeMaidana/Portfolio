@@ -46,18 +46,5 @@
 </style>
 
 <script>
-    const initSkipLink = () => {
-        const skipLink = document.querySelector('.skip-to-content');
-        const mainContent = document.querySelector('#main-content') as HTMLElement;
-
-        if (skipLink && mainContent) {
-            skipLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                mainContent.focus();
-            });
-        }
-    };
-
-    initSkipLink();
-    document.addEventListener('astro:page-load', initSkipLink);
+    import '../../scripts/skipLink';
 </script>

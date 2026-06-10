@@ -1,0 +1,80 @@
+import { FLAG } from '../Constant';
+import { MathUtils } from '../Maths';
+import type { GridConfig } from '../Types';
+import { waveOffset } from '../Wave';
+
+export class SunRenderer {
+    constructor(private ctx: OffscreenCanvasRenderingContext2D) {}
+
+    draw(t: number, grid: GridConfig, cols: number, rows: number, W: number, H: number) {
+        const R = Math.max(36, Math.min(W, H) * FLAG.sunRadius);
+        const maxR = R * FLAG.sunReach;
+        const cx = W / 2;
+        const cy = H / 2;
+
+        const c0 = Math.max(0, Math.floor((cx - maxR) / grid.cw));
+        const c1 = Math.min(cols, Math.ceil((cx + maxR) / grid.cw));
+        const margin = Math.ceil(FLAG.waveAmp * 2) + 2;
+        const r0 = Math.max(0, Math.floor((cy - maxR) / grid.ch) - margin);
+        const r1 = Math.min(rows, Math.ceil((cy + maxR) / grid.ch) + margin);
+
+        const pulse = 0.9 + 0.1 * Math.sin(t * 2);
+
+        for (let c = c0; c < c1; c++) {
+            const normX = c / cols;
+            const { offset } = waveOffset(normX, t);
+            const px = c * grid.cw + grid.cw * 0.5;
+            const dx = px - cx;
+
+            for (let r = r0; r < r1; r++) {
+                const sampleYpx = (r + offset) * grid.ch + grid.ch * 0.5;
+                const dy = sampleYpx - cy;
+
+                const dist = Math.hypot(dx, dy);
+                if (dist > maxR) continue;
+
+                const intensity = this.sunIntensity(dx, dy, dist, R);
+                if (intensity <= 0.05) continue;
+
+                const alpha = MathUtils.sat(intensity) * FLAG.alphaSun * pulse;
+
+                let char: string;
+                if (intensity > 0.85) char = '█';
+                else if (intensity > 0.6) char = '▓';
+                else if (intensity > 0.35) char = '▒';
+                else char = '░';
+
+                this.ctx.fillStyle = `rgba(${FLAG.gold.r},${FLAG.gold.g},${FLAG.gold.b},${alpha})`;
+                this.ctx.fillText(char, c * grid.cw, r * grid.ch);
+            }
+        }
+    }
+
+    private sunIntensity(dx: number, dy: number, dist: number, R: number): number {
+        if (dist <= R) {
+            return 0.82 + 0.18 * (1 - dist / R);
+        }
+
+        const seg = (Math.atan2(dy, dx) / (Math.PI * 2)) * FLAG.sunRays;
+        const idx = Math.round(seg);
+        const isWavy = ((idx % 2) + 2) % 2 === 1;
+
+        let segDist: number;
+        if (isWavy) {
+            const wiggle = Math.sin((dist - R) * 0.16) * 0.22;
+            segDist = Math.abs(seg - idx - wiggle);
+        } else {
+            segDist = Math.abs(seg - idx);
+        }
+
+        const rayLen = isWavy ? R * (FLAG.sunReach * 0.78) : R * FLAG.sunReach;
+        if (dist >= rayLen) return 0;
+
+        const along = (dist - R) / (rayLen - R);
+        const halfWidth = 0.38 * (1 - along * 0.85);
+
+        if (segDist >= halfWidth) return 0;
+
+        return (1 - along) * (1 - (segDist / halfWidth) * 0.45);
+    }
+}

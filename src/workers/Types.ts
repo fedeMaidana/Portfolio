@@ -1,10 +1,42 @@
-export type WorkerMessage =
-    | {
-          type: 'init';
-          payload: { canvas: OffscreenCanvas; width: number; height: number; dpr: number };
-      }
-    | { type: 'resize'; payload: { width: number; height: number; dpr: number } }
-    | { type: 'motion-preference'; payload: { reduces: boolean } };
+// ── Payloads ───────────────────────────────────────────────
+
+export interface CanvasInit {
+    canvas: OffscreenCanvas;
+    width: number;
+    height: number;
+    dpr: number;
+}
+
+export interface CanvasResize {
+    width: number;
+    height: number;
+    dpr: number;
+}
+
+export interface MotionPreference {
+    reduces: boolean;
+}
+
+// ── Mensajes ───────────────────────────────────────────────
+
+export interface InitMessage {
+    type: 'init';
+    payload: CanvasInit;
+}
+
+export interface ResizeMessage {
+    type: 'resize';
+    payload: CanvasResize;
+}
+
+export interface MotionMessage {
+    type: 'motion-preference';
+    payload: MotionPreference;
+}
+
+export type WorkerMessage = InitMessage | ResizeMessage | MotionMessage;
+
+// ── Render ─────────────────────────────────────────────────
 
 export interface GridConfig {
     cw: number;
@@ -23,5 +55,4 @@ export interface CellRender {
     color: CellColor;
 }
 
-/** Tupla [R, G, B, alpha] para el mapa de colores de la tabla. */
 export type ColorTuple = [number, number, number, number];

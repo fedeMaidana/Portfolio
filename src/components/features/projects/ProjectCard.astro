@@ -1,4 +1,5 @@
 ---
+import { getRepoStars } from '@/services/github';
 import { getSoftwareSchema } from '@/utils/schema';
 import { type CollectionEntry } from 'astro:content';
 import ArrowIcon from '../../ui/icons/ArrowIcon.astro';
@@ -23,21 +24,7 @@ const softwareSchema = getSoftwareSchema({
     repoUrl,
 });
 
-let stars = 0;
-
-if (repoUrl && repoUrl.startsWith('https://github.com/')) {
-    const repoPath = new URL(repoUrl).pathname.slice(1);
-
-    try {
-        const res = await fetch(`https://api.github.com/repos/${repoPath}`);
-        if (res.ok) {
-            const data = await res.json();
-            stars = data.stargazers_count;
-        }
-    } catch {
-        throw new Error(`Error al obtener estrellas para ${repoPath}:`);
-    }
-}
+const stars = await getRepoStars(repoUrl);
 ---
 
 <article class="work-card">
@@ -263,8 +250,6 @@ if (repoUrl && repoUrl.startsWith('https://github.com/')) {
             }
         }
 
-        /* ─── Step 1: Content fades ─── */
-
         :scope.is-exiting .tag,
         :scope.is-exiting .name,
         :scope.is-exiting .status-pill,
@@ -283,8 +268,6 @@ if (repoUrl && repoUrl.startsWith('https://github.com/')) {
                 stroke 0s;
         }
 
-        /* ─── Step 2: SVG morphs shape ─── */
-
         :scope.is-morphing :global(.folder-bg path) {
             fill: var(--accent-hover-bg);
             d: path(
@@ -297,14 +280,6 @@ if (repoUrl && repoUrl.startsWith('https://github.com/')) {
                 fill 0s;
         }
     }
-
-    /*
-     * Overlay styles — element is appended to <body> via JS.
-     *
-     * Default state: glass effect matching .glass cards.
-     * .is-expanding: transitions glass → solid var(--bg)
-     *                during the grow-to-viewport phase.
-     */
 
     :global(#card-expand-overlay) {
         background-color: var(--card-bg);
@@ -322,206 +297,5 @@ if (repoUrl && repoUrl.startsWith('https://github.com/')) {
 </style>
 
 <script>
-    /*
-     * Animation timeline (more deliberate pacing):
-     *
-     * t=0ms        Content starts fading
-     * t=350ms      Content gone.
-     *              SVG morph starts (folder → rectangle, 550ms).
-     *              Glass overlay created at card position, opacity=0.
-     * t=550ms      Overlay starts fading in (200ms delay lets morph be visible).
-     * t=900ms      SVG morphed. Overlay fully opaque (glass).
-     * t=1050ms     Breathing pause (150ms).
-     * t=1050ms     Overlay expands to viewport. Glass → solid var(--bg).
-     * t=1700ms     Navigate.
-     *
-     * On destination page (astro:page-load):
-     *              Overlay fades out over 350ms instead of instant remove.
-     *              This gives .glass cards time to composite backdrop-filter.
-     *
-     * Overlay is appended to <body> (not inside .glass) because
-     * backdrop-filter creates a containing block that breaks position:fixed.
-     */
-
-    let isTransitioning = false;
-
-    function wait(ms: number): Promise<void> {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    async function handleCardClick(e: Event) {
-        e.preventDefault();
-        if (isTransitioning) return;
-
-        const link = e.currentTarget as HTMLAnchorElement;
-        const card = link.closest('.work-card') as HTMLElement | null;
-        if (!card) return;
-
-        const href = link.getAttribute('href');
-        if (!href) return;
-
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            window.location.href = href;
-            return;
-        }
-
-        isTransitioning = true;
-
-        // Prefetch
-        const prefetchLink = document.createElement('link');
-        prefetchLink.rel = 'prefetch';
-        prefetchLink.href = href;
-        document.head.appendChild(prefetchLink);
-
-        // ── Step 1: Fade out content ──
-        card.classList.add('is-exiting');
-        card.style.viewTransitionName = 'none';
-        await wait(350);
-
-        // ── Step 2: Morph SVG + create overlay simultaneously ──
-        const rect = card.getBoundingClientRect();
-
-        // Create glass overlay at card position (invisible for now)
-        const overlay = document.createElement('div');
-        overlay.id = 'card-expand-overlay';
-        Object.assign(overlay.style, {
-            position: 'fixed',
-            top: `${rect.top}px`,
-            left: `${rect.left}px`,
-            width: `${rect.width}px`,
-            height: `${rect.height}px`,
-            borderRadius: 'var(--radius-lg)',
-            zIndex: '99999',
-            pointerEvents: 'none',
-            opacity: '0',
-        });
-        document.body.appendChild(overlay);
-
-        // Start SVG morph
-        card.classList.add('is-morphing');
-
-        // Let the morph be visible for 200ms, then fade overlay in
-        await wait(200);
-
-        // Fade overlay in over 350ms (as SVG finishes morphing underneath)
-        overlay.style.transition = 'opacity 0.35s ease';
-        overlay.style.opacity = '1';
-        await wait(350);
-
-        // ── Breathing pause ──
-        await wait(150);
-
-        // ── Step 3: Expand overlay to viewport ──
-        const dur = '0.65s';
-        const ease = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
-        overlay.style.transition = [
-            `top ${dur} ${ease}`,
-            `left ${dur} ${ease}`,
-            `width ${dur} ${ease}`,
-            `height ${dur} ${ease}`,
-            `border-radius ${dur} ${ease}`,
-            `background-color ${dur} ${ease}`,
-            `backdrop-filter ${dur} ${ease}`,
-            `border-color ${dur} ${ease}`,
-            `box-shadow ${dur} ${ease}`,
-        ].join(', ');
-
-        overlay.classList.add('is-expanding');
-        Object.assign(overlay.style, {
-            top: '0px',
-            left: '0px',
-            width: '100vw',
-            height: '100vh',
-            borderRadius: '0px',
-        });
-
-        await wait(600);
-
-        // Forzar overlay opaco antes de que la VT capture el snapshot
-        overlay.style.transition = 'none';
-        overlay.style.backgroundColor = 'var(--bg)';
-        overlay.style.backdropFilter = 'none';
-        card.style.visibility = 'hidden';
-        void overlay.offsetHeight; // forzar repaint sincrónico
-
-        try {
-            needsCoverOnLoad = true;
-            const { navigate } = await import('astro:transitions/client');
-            navigate(href, { info: { skipVT: true } });
-        } catch {
-            needsCoverOnLoad = false;
-            window.location.href = href;
-        }
-    }
-
-    function cleanup() {
-        isTransitioning = false;
-
-        const overlay = document.getElementById('card-expand-overlay');
-
-        if (overlay && needsCoverOnLoad) {
-            needsCoverOnLoad = false;
-
-            // Esperar a que el compositor aplique backdrop-filter en las .glass
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        setTimeout(() => {
-                            overlay.style.transition = 'opacity 0.4s ease';
-                            overlay.style.opacity = '0';
-                            overlay.addEventListener('transitionend', () => overlay.remove(), {
-                                once: true,
-                            });
-                        }, 30);
-                    });
-                });
-            });
-        } else if (overlay) {
-            overlay.remove();
-        }
-
-        needsCoverOnLoad = false;
-
-        document.querySelectorAll('.work-card').forEach((card) => {
-            card.classList.remove('is-exiting', 'is-morphing');
-            (card as HTMLElement).style.viewTransitionName = '';
-        });
-    }
-
-    function initProjectTransitions() {
-        cleanup();
-        document.querySelectorAll<HTMLAnchorElement>('.work-card .main-link').forEach((link) => {
-            link.removeEventListener('click', handleCardClick);
-            link.addEventListener('click', handleCardClick);
-        });
-    }
-
-    let needsCoverOnLoad = false;
-
-    document.addEventListener('astro:before-swap', (e: any) => {
-        if (!needsCoverOnLoad) return;
-
-        const overlay = e.newDocument.createElement('div');
-        overlay.id = 'card-expand-overlay';
-        Object.assign(overlay.style, {
-            position: 'fixed',
-            inset: '0',
-            width: '100vw',
-            height: '100vh',
-            zIndex: '99999',
-            pointerEvents: 'none',
-            backgroundColor: 'var(--bg)',
-            opacity: '1',
-        });
-        e.newDocument.body.appendChild(overlay);
-    });
-
-    initProjectTransitions();
-    document.addEventListener('astro:page-load', initProjectTransitions);
-
-    document.addEventListener('astro:before-swap', (e: any) => {
-        if (e.info?.skipVT) {
-            e.viewTransition.skipTransition();
-        }
-    });
+    import '../../../scripts/projectCardTransition';
 </script>
