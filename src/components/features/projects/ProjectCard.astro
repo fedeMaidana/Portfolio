@@ -138,9 +138,7 @@ const stars = await getRepoStars(repoUrl);
             font-size: var(--text-sm);
             color: var(--text);
             z-index: 2;
-            transition:
-                opacity 0.3s ease 0.02s,
-                transform 0.3s ease 0.02s;
+            transition: opacity 0.2s ease;
         }
 
         .stars-badge svg {
@@ -164,9 +162,7 @@ const stars = await getRepoStars(repoUrl);
             font-size: var(--text-sm);
             color: var(--accent);
             letter-spacing: 0.05em;
-            transition:
-                opacity 0.3s ease,
-                transform 0.3s ease;
+            transition: opacity 0.2s ease;
         }
 
         .name {
@@ -180,9 +176,7 @@ const stars = await getRepoStars(repoUrl);
             color: var(--text);
             margin: 0;
             white-space: nowrap;
-            transition:
-                opacity 0.3s ease 0.04s,
-                transform 0.3s ease 0.04s;
+            transition: opacity 0.2s ease;
         }
 
         .status-pill {
@@ -197,9 +191,7 @@ const stars = await getRepoStars(repoUrl);
             backdrop-filter: blur(4px);
             border: 1px solid var(--card-border);
             border-radius: 100px;
-            transition:
-                all var(--transition-base),
-                opacity 0.3s ease 0.06s;
+            transition: all var(--transition-base);
             cursor: pointer;
             z-index: 2;
         }
@@ -263,48 +255,41 @@ const stars = await getRepoStars(repoUrl);
             }
         }
 
+        /* ─── Estado de transición (ida y vuelta) ─── */
+
         :scope.is-exiting .tag,
         :scope.is-exiting .name,
         :scope.is-exiting .status-pill,
         :scope.is-exiting .stars-badge,
         :scope.is-exiting :global(.arrow) {
             opacity: 0;
-            transform: translateY(8px);
             pointer-events: none;
         }
 
         :scope.is-exiting :global(.folder-bg path) {
             fill: var(--accent-hover-bg);
             stroke: var(--accent-hover-border);
-            transition:
-                fill 0s,
-                stroke 0s;
-        }
-
-        :scope.is-morphing :global(.folder-bg path) {
-            fill: var(--accent-hover-bg);
-            d: path(
-                'M 8,0 L 152,0 Q 160,0 160,8 L 160,82 Q 160,90 152,90 L 152,90 Q 152,90 152,90 L 152,90 Q 152,90 132,90 L 8,90 Q 0,90 0,82 L 0,8 Q 0,0 8,0 L 8,0 Q 8,0 8,0 L 8,0 Q 8,0 8,0 Z'
-            );
-            stroke: transparent;
-            transition:
-                d 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
-                stroke 0.3s ease,
-                fill 0s;
         }
     }
 
+    /* ─── Overlay de expansión ─── */
+
     :global(#card-expand-overlay) {
         background-color: var(--card-bg);
+        -webkit-backdrop-filter: blur(28px) saturate(130%);
         backdrop-filter: blur(28px) saturate(130%);
-        border: 1px solid var(--card-border);
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        transition:
+            background-color 0.46s var(--ease-out-expo),
+            -webkit-backdrop-filter 0.46s var(--ease-out-expo),
+            backdrop-filter 0.46s var(--ease-out-expo),
+            box-shadow 0.46s var(--ease-out-expo);
     }
 
     :global(#card-expand-overlay.is-expanding) {
         background-color: var(--bg);
-        backdrop-filter: blur(60px) saturate(100%);
-        border-color: transparent;
+        -webkit-backdrop-filter: blur(0px) saturate(100%);
+        backdrop-filter: blur(0px) saturate(100%);
         box-shadow: none;
     }
 </style>

@@ -90,20 +90,8 @@ const isCurrent = project.data.number === '#001';
 </Layout>
 
 <style>
-    /* Desktop: el wrapper es invisible para el layout */
     .page-shell {
         display: contents;
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(24px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
     }
 
     .project-container {
@@ -111,18 +99,11 @@ const isCurrent = project.data.number === '#001';
         margin: 0 auto;
         padding: 6rem 2rem 5rem;
         position: relative;
-        animation: slideUp 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.15s both;
     }
 
     .project-container :global(.glass) {
         animation: none;
         opacity: 1;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .project-container {
-            animation: none;
-        }
     }
 
     :global(.header-card):hover,
@@ -370,7 +351,6 @@ const isCurrent = project.data.number === '#001';
 
         .project-container {
             padding: 0;
-            animation: none;
         }
 
         .title-block {
@@ -419,7 +399,3 @@ const isCurrent = project.data.number === '#001';
         }
     }
 </style>
-
-<script>
-    import '../../scripts/projectDetail';
-</script>
