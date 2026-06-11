@@ -1,19 +1,16 @@
 ---
 import Card from '../ui/Card.astro';
 
-const links = [
-    { label: 'Correo', href: 'mailto:fede_trabajo@proton.me', rel: 'author', external: false },
+const socials = [
     {
         label: 'GitHub',
         href: 'https://www.github.com/fedeMaidana',
         rel: 'noopener noreferrer',
-        external: true,
     },
     {
         label: 'LinkedIn',
         href: 'https://www.linkedin.com/in/fede-maidana/',
         rel: 'noopener noreferrer',
-        external: true,
     },
 ];
 ---
@@ -26,18 +23,46 @@ const links = [
         sistemas?
     </p>
 
+    <form id="contact-form" class="contact-form" aria-label="Formulario de contacto" novalidate>
+        <div class="field">
+            <label for="cf-name">Nombre</label>
+            <input id="cf-name" name="name" type="text" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+            <label for="cf-email">Tu correo</label>
+            <input id="cf-email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+            <label for="cf-message">Mensaje</label>
+            <textarea id="cf-message" name="message" rows="4" required></textarea>
+        </div>
+
+        <input
+            type="checkbox"
+            name="botcheck"
+            class="botcheck"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+        />
+
+        <button type="submit" class="submit-btn">
+            <span class="btn-label">Enviar mensaje</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <p class="form-status" role="status" aria-live="polite"></p>
+    </form>
+
     <address class="contact-links">
         {
-            links.map(({ label, href, rel, external }, i) => (
-                <a
-                    href={href}
-                    rel={rel}
-                    target={external ? '_blank' : undefined}
-                    style={`--i: ${i}`}
-                >
+            socials.map(({ label, href, rel }, i) => (
+                <a href={href} rel={rel} target="_blank" style={`--i: ${i}`}>
                     <span class="link-label">{label}</span>
                     <span class="link-arrow" aria-hidden="true">
-                        {external ? '↗' : '→'}
+                        ↗
                     </span>
                 </a>
             ))
@@ -59,7 +84,7 @@ const links = [
             line-height: 1.7;
             color: color-mix(in srgb, var(--text), transparent 25%);
             max-width: 44ch;
-            margin-block-end: 1.5rem;
+            margin-block-end: 1.75rem;
 
             & strong {
                 color: var(--accent);
@@ -67,7 +92,146 @@ const links = [
             }
         }
 
-        /* ─── Links ─── */
+        /* ─── Form ─── */
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-block-end: 2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .field label {
+            font-family: var(--font-mono);
+            font-size: var(--text-xxs);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .field input,
+        .field textarea {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--text);
+            background-color: color-mix(in srgb, var(--card-bg) 40%, transparent);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 0.7rem 0.85rem;
+            width: 100%;
+            transition:
+                border-color 0.25s ease,
+                background-color 0.25s ease;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 6rem;
+            line-height: 1.6;
+        }
+
+        .field input::placeholder,
+        .field textarea::placeholder {
+            color: color-mix(in srgb, var(--text-muted), transparent 35%);
+        }
+
+        .field input:focus-visible,
+        .field textarea:focus-visible {
+            outline: none;
+            border-color: var(--accent-hover-border);
+            background-color: var(--accent-hover-bg);
+        }
+
+        .field input:user-invalid,
+        .field textarea:user-invalid {
+            border-color: color-mix(in srgb, oklch(63% 0.21 25), transparent 30%);
+        }
+
+        .botcheck {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ─── Submit ─── */
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            align-self: flex-start;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--bg);
+            background-color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-sm);
+            padding: 0.7rem 1.4rem;
+            cursor: pointer;
+            transition:
+                opacity 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:focus-visible {
+            outline: 1px solid var(--accent);
+            outline-offset: 4px;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.55;
+            cursor: progress;
+            transform: none;
+        }
+
+        .btn-arrow {
+            transition: transform 0.25s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) .btn-arrow {
+            transform: translateX(3px);
+        }
+
+        /* ─── Status ─── */
+
+        .form-status {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            line-height: 1.5;
+            min-height: 1.2em;
+            margin: 0;
+        }
+
+        .form-status:empty {
+            display: none;
+        }
+
+        .form-status[data-kind='ok'] {
+            color: oklch(72% 0.19 145);
+        }
+
+        .form-status[data-kind='error'] {
+            color: oklch(70% 0.19 25);
+        }
+
+        /* ─── Social links ─── */
 
         .contact-links {
             display: flex;
@@ -75,6 +239,8 @@ const links = [
             gap: 0;
             font-style: normal;
             margin-block-end: 1.5rem;
+            border-block-start: 1px solid color-mix(in srgb, var(--card-border), transparent 40%);
+            padding-block-start: 0.5rem;
         }
 
         .contact-links a {
@@ -143,10 +309,26 @@ const links = [
         }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+        @scope (.contact) {
+            .submit-btn:hover:not(:disabled) {
+                transform: none;
+            }
+
+            .submit-btn:hover:not(:disabled) .btn-arrow {
+                transform: none;
+            }
+        }
+    }
+
     @media (max-width: 600px) {
         @scope (.contact) {
             .contact-cta {
                 max-width: 100%;
+            }
+
+            .submit-btn {
+                align-self: stretch;
             }
 
             .contact-links a {
@@ -159,3 +341,7 @@ const links = [
         }
     }
 </style>
+
+<script>
+    import '../../scripts/contactForm';
+</script>
