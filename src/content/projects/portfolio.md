@@ -14,11 +14,11 @@ Decisiones técnicas:
 
 Elegí Astro porque manda muy poco JavaScript al navegador. Para un portafolio estático donde el contenido es lo que importa, eso significa cargas casi instantáneas sin sacrificar interactividad donde realmente hace falta.
 
-La arquitectura de componentes `.astro` me permitió separar cada sección en piezas independientes que son fáciles de mantener.
+La arquitectura de componentes `astro` me permitió separar cada sección en piezas independientes que son fáciles de mantener.
 
 ### Bun como runtime
 
-Usé `bun` en lugar de Node.js. Las instalaciones de dependencias y los builds son notablemente más rápidos.
+Usé `bun` en lugar de Node.js. Las instalaciones de dependencias y los builds son más rápidos.
 
 ### TypeScript estricto
 
@@ -26,13 +26,13 @@ Todo está tipado con `TypeScript` en su modo más estricto. En la práctica est
 
 ### CSS nativo
 
-Decidí no usar `Tailwind` o algún otro framework CSS. En su lugar utilice CSS nativo organizado con capas `@layer`, que me deja controlar los estilos de forma ordenada y sin trucos raros. La minificación la hace `LightningCSS`, que es rápida y deja el archivo final bien chico.
+Decidí no usar `Tailwind` o algún otro framework CSS. En su lugar utilice CSS nativo organizado con capas `@layer`, que me deja controlar los estilos de forma ordenada. La minificación la hace `LightningCSS`, que es rápida y deja el archivo final pequeño.
 
 Las tipografías van servidas desde el propio sitio y precargadas, así no hay saltos ni parpadeos de texto al abrir la página.
 
-### El fondo animado
+### Fondo animado
 
-El fondo es una bandera argentina dibujada con caracteres `ASCII`. Corre en un hilo aparte para no trabar el resto de la página, se adapta al tamaño de pantalla y respeta la preferencia de quienes prefieren menos movimiento.
+El fondo es una bandera Argentina dibujada con caracteres `ASCII`. Corre en un hilo aparte para no trabar el resto de la página, se adapta al tamaño de pantalla y respeta la preferencia de quienes prefieren menos movimiento.
 
 ![Bandera argentina dibujada con caracteres ASCII](../../assets/pictures/flag.png)
 

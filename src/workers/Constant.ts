@@ -25,3 +25,13 @@ export const FLAG = {
 } as const;
 
 export const ALPHA_STEPS = 24;
+
+export const CHARS = ['█', '▓', '▒', '░', '·'] as const;
+
+export const PALETTE = [FLAG.celeste, FLAG.white, FLAG.gold] as const;
+
+export const COLOR_INDEX = {
+    celeste: 0,
+    white: 1,
+    gold: 2,
+} as const;

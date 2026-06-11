@@ -26,5 +26,8 @@ self.onmessage = async ({ data }: MessageEvent<WorkerMessage>) => {
         case 'motion-preference':
             scene?.setReducedMotion(payload.reduces);
             break;
+        case 'visibility':
+            scene?.setVisibility(payload.hidden);
+            break;
     }
 };

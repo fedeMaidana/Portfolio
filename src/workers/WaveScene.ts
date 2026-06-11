@@ -7,6 +7,7 @@ export class WaveScene {
 
     private tick: number = 0;
     private reducedMotion: boolean = false;
+    private hidden: boolean = false;
     private animationFrameId: number = 0;
 
     private grid: GridConfig = CONFIG.grid;
@@ -38,18 +39,25 @@ export class WaveScene {
         this.reducedMotion = reduces;
 
         if (reduces) {
-            if (this.animationFrameId !== 0) {
-                cancelAnimationFrame(this.animationFrameId);
-                this.animationFrameId = 0;
-            }
+            this.stop();
             this.drawFrame();
-        } else if (this.animationFrameId === 0) {
-            this.render();
+        } else {
+            this.resume();
+        }
+    }
+
+    public setVisibility(hidden: boolean) {
+        this.hidden = hidden;
+
+        if (hidden) {
+            this.stop();
+        } else {
+            this.resume();
         }
     }
 
     public render() {
-        if (this.reducedMotion) {
+        if (this.reducedMotion || this.hidden) {
             this.animationFrameId = 0;
             return;
         }
@@ -65,6 +73,19 @@ export class WaveScene {
     }
 
     // ── Privado ───────────────────────────────
+
+    private stop() {
+        if (this.animationFrameId !== 0) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = 0;
+        }
+    }
+
+    private resume() {
+        if (!this.reducedMotion && !this.hidden && this.animationFrameId === 0) {
+            this.render();
+        }
+    }
 
     private drawFrame() {
         this.ctx.fillStyle = CONFIG.bg;
@@ -84,6 +105,6 @@ export class WaveScene {
         this.cvs.height = this.H * this.dpr;
         this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
-        if (this.reducedMotion) this.drawFrame();
+        if (this.reducedMotion || this.hidden) this.drawFrame();
     }
 }

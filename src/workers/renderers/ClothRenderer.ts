@@ -1,12 +1,20 @@
-import { FLAG } from '../Constant';
+import { COLOR_INDEX, FLAG } from '../Constant';
+import type { GlyphAtlas } from '../GlyphAtlas';
 import { MathUtils } from '../Maths';
 import type { GridConfig } from '../Types';
 import { waveOffset } from '../Wave';
 
-export class ClothRenderer {
-    constructor(private ctx: OffscreenCanvasRenderingContext2D) {}
+const MIN_ALPHA = 0.04;
 
-    draw(t: number, grid: GridConfig, cols: number, rows: number, foldScale = 1) {
+export class ClothRenderer {
+    draw(
+        t: number,
+        grid: GridConfig,
+        cols: number,
+        rows: number,
+        atlas: GlyphAtlas,
+        foldScale = 1
+    ): void {
         const invCols = 1 / cols;
         const invRows = 1 / rows;
 
@@ -28,19 +36,28 @@ export class ClothRenderer {
                 const n = MathUtils.fbm(normX * 16 + t * 0.05, sampleY * 12 - t * 0.02);
                 const lum = MathUtils.sat(shade * (0.8 + n * 0.2));
 
-                let char: string;
-                if (lum > 0.82) char = '█';
-                else if (lum > 0.62) char = '▓';
-                else if (lum > 0.42) char = '▒';
-                else if (lum > 0.26) char = '░';
-                else char = '·';
-
-                const color = isWhite ? FLAG.white : FLAG.celeste;
                 const base = isWhite ? FLAG.alphaWhite : FLAG.alphaCeleste;
                 const alpha = base * (0.5 + lum * 0.5);
+                if (alpha < MIN_ALPHA) continue;
 
-                this.ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${alpha})`;
-                this.ctx.fillText(char, px, r * grid.ch);
+                let charIdx: number;
+                if (lum > 0.82)
+                    charIdx = 0; // █
+                else if (lum > 0.62)
+                    charIdx = 1; // ▓
+                else if (lum > 0.42)
+                    charIdx = 2; // ▒
+                else if (lum > 0.26)
+                    charIdx = 3; // ░
+                else charIdx = 4; // ·
+
+                atlas.add(
+                    charIdx,
+                    isWhite ? COLOR_INDEX.white : COLOR_INDEX.celeste,
+                    alpha,
+                    px,
+                    r * grid.ch
+                );
             }
         }
     }

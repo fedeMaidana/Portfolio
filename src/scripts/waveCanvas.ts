@@ -2,6 +2,7 @@ let currentWorker: Worker | null = null;
 let resizeHandler: (() => void) | null = null;
 let motionQuery: MediaQueryList | null = null;
 let motionHandler: ((e: MediaQueryListEvent) => void) | null = null;
+let visibilityHandler: (() => void) | null = null;
 
 function cleanup() {
     if (currentWorker) {
@@ -16,6 +17,10 @@ function cleanup() {
         motionQuery.removeEventListener('change', motionHandler);
         motionHandler = null;
         motionQuery = null;
+    }
+    if (visibilityHandler) {
+        document.removeEventListener('visibilitychange', visibilityHandler);
+        visibilityHandler = null;
     }
 }
 
@@ -32,7 +37,7 @@ function initWave() {
     });
     currentWorker = worker;
 
-    const getDpr = () => Math.min(window.devicePixelRatio || 1, 2);
+    const getDpr = () => Math.min(window.devicePixelRatio || 1, 1.25);
 
     worker.postMessage(
         {
@@ -72,6 +77,12 @@ function initWave() {
         type: 'motion-preference',
         payload: { reduces: motionQuery.matches },
     });
+
+    visibilityHandler = () => {
+        worker.postMessage({ type: 'visibility', payload: { hidden: document.hidden } });
+    };
+    document.addEventListener('visibilitychange', visibilityHandler);
+    worker.postMessage({ type: 'visibility', payload: { hidden: document.hidden } });
 }
 
 document.addEventListener('astro:page-load', initWave);

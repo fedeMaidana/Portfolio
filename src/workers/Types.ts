@@ -17,6 +17,10 @@ export interface MotionPreference {
     reduces: boolean;
 }
 
+export interface VisibilityState {
+    hidden: boolean;
+}
+
 // ── Mensajes ───────────────────────────────────────────────
 
 export interface InitMessage {
@@ -34,7 +38,12 @@ export interface MotionMessage {
     payload: MotionPreference;
 }
 
-export type WorkerMessage = InitMessage | ResizeMessage | MotionMessage;
+export interface VisibilityMessage {
+    type: 'visibility';
+    payload: VisibilityState;
+}
+
+export type WorkerMessage = InitMessage | ResizeMessage | MotionMessage | VisibilityMessage;
 
 // ── Render ─────────────────────────────────────────────────
 

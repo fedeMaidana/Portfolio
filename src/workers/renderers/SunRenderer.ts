@@ -1,18 +1,26 @@
-import { FLAG } from '../Constant';
+import { COLOR_INDEX, FLAG } from '../Constant';
+import type { GlyphAtlas } from '../GlyphAtlas';
 import { MathUtils } from '../Maths';
 import type { GridConfig } from '../Types';
 import { waveOffset } from '../Wave';
 
 export class SunRenderer {
-    constructor(private ctx: OffscreenCanvasRenderingContext2D) {}
-
-    draw(t: number, grid: GridConfig, cols: number, rows: number, W: number, H: number) {
+    draw(
+        t: number,
+        grid: GridConfig,
+        cols: number,
+        rows: number,
+        W: number,
+        H: number,
+        atlas: GlyphAtlas
+    ): void {
         const portrait = H > W;
         const radiusScale = portrait ? 0.9 : 1;
         const reach = FLAG.sunReach * (portrait ? 0.68 : 1);
 
         const R = Math.max(36, Math.min(W, H) * FLAG.sunRadius * radiusScale);
         const maxR = R * reach;
+        const maxRSq = maxR * maxR;
         const cx = W / 2;
         const cy = H / 2;
 
@@ -29,27 +37,31 @@ export class SunRenderer {
             const { offset } = waveOffset(normX, t);
             const px = c * grid.cw + grid.cw * 0.5;
             const dx = px - cx;
+            const dxSq = dx * dx;
 
             for (let r = r0; r < r1; r++) {
                 const sampleYpx = (r + offset) * grid.ch + grid.ch * 0.5;
                 const dy = sampleYpx - cy;
 
-                const dist = Math.hypot(dx, dy);
-                if (dist > maxR) continue;
+                const distSq = dxSq + dy * dy;
+                if (distSq > maxRSq) continue;
 
+                const dist = Math.sqrt(distSq);
                 const intensity = this.sunIntensity(dx, dy, dist, R, reach);
                 if (intensity <= 0.05) continue;
 
                 const alpha = MathUtils.sat(intensity) * FLAG.alphaSun * pulse;
 
-                let char: string;
-                if (intensity > 0.85) char = '█';
-                else if (intensity > 0.6) char = '▓';
-                else if (intensity > 0.35) char = '▒';
-                else char = '░';
+                let charIdx: number;
+                if (intensity > 0.85)
+                    charIdx = 0; // █
+                else if (intensity > 0.6)
+                    charIdx = 1; // ▓
+                else if (intensity > 0.35)
+                    charIdx = 2; // ▒
+                else charIdx = 3; // ░
 
-                this.ctx.fillStyle = `rgba(${FLAG.gold.r},${FLAG.gold.g},${FLAG.gold.b},${alpha})`;
-                this.ctx.fillText(char, c * grid.cw, r * grid.ch);
+                atlas.add(charIdx, COLOR_INDEX.gold, alpha, c * grid.cw, r * grid.ch);
             }
         }
     }
