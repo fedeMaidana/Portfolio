@@ -42,7 +42,6 @@ export class WaveScene {
                 cancelAnimationFrame(this.animationFrameId);
                 this.animationFrameId = 0;
             }
-            // Un único frame estático: la bandera queda visible sin animar.
             this.drawFrame();
         } else if (this.animationFrameId === 0) {
             this.render();
@@ -75,7 +74,7 @@ export class WaveScene {
     }
 
     private gridForSize(): GridConfig {
-        return this.W < 768 ? { cw: 7, ch: 12 } : { cw: 5, ch: 9 };
+        return this.W < 768 ? { cw: 6, ch: 10 } : { cw: 4, ch: 7 };
     }
 
     private applyResize() {

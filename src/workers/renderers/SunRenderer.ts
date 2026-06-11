@@ -1,4 +1,4 @@
-import { FLAG } from '../Constant';
+import { ALPHA_STEPS, FLAG } from '../Constant';
 import { MathUtils } from '../Maths';
 import type { GridConfig } from '../Types';
 import { waveOffset } from '../Wave';
@@ -20,6 +20,16 @@ export class SunRenderer {
 
         const pulse = 0.9 + 0.1 * Math.sin(t * 2);
 
+        const goldPalette: string[] = [];
+        for (let i = 0; i <= ALPHA_STEPS; i++) {
+            const alpha = (i / ALPHA_STEPS) * FLAG.alphaSun * pulse;
+            goldPalette.push(
+                `rgba(${FLAG.gold.r},${FLAG.gold.g},${FLAG.gold.b},${alpha.toFixed(3)})`
+            );
+        }
+
+        let lastStyle = '';
+
         for (let c = c0; c < c1; c++) {
             const normX = c / cols;
             const { offset } = waveOffset(normX, t);
@@ -36,15 +46,23 @@ export class SunRenderer {
                 const intensity = this.sunIntensity(dx, dy, dist, R);
                 if (intensity <= 0.05) continue;
 
-                const alpha = MathUtils.sat(intensity) * FLAG.alphaSun * pulse;
-
                 let char: string;
                 if (intensity > 0.85) char = '█';
                 else if (intensity > 0.6) char = '▓';
                 else if (intensity > 0.35) char = '▒';
                 else char = '░';
 
-                this.ctx.fillStyle = `rgba(${FLAG.gold.r},${FLAG.gold.g},${FLAG.gold.b},${alpha})`;
+                const bucket = Math.min(
+                    ALPHA_STEPS,
+                    Math.round(MathUtils.sat(intensity) * ALPHA_STEPS)
+                );
+                const style = goldPalette[bucket] as string;
+
+                if (style !== lastStyle) {
+                    this.ctx.fillStyle = style;
+                    lastStyle = style;
+                }
+
                 this.ctx.fillText(char, c * grid.cw, r * grid.ch);
             }
         }
