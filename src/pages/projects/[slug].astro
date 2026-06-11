@@ -17,6 +17,8 @@ interface Props {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+
+const isCurrent = project.data.number === '#001';
 ---
 
 <Layout title={`${project.data.title} | Fede Maidana`} description={project.data.description}>
@@ -52,7 +54,7 @@ const { Content } = await render(project);
 
                 <div class="actions">
                     {
-                        project.data.link && project.data.link !== '#' && (
+                        !isCurrent && project.data.link && project.data.link !== '#' && (
                             <a
                                 href={project.data.link}
                                 target="_blank"
@@ -287,6 +289,23 @@ const { Content } = await render(project);
         font-size: var(--text-h3);
         margin-block-start: 3rem;
         margin-block-end: 1.25rem;
+        position: relative;
+        padding-block-start: 3rem;
+    }
+
+    .prose :global(h3)::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        height: 1px;
+        background-color: var(--card-border);
+    }
+
+    .prose :global(h3):first-child::before {
+        display: none;
     }
 
     .prose :global(ul) {
