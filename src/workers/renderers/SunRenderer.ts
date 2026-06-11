@@ -1,4 +1,4 @@
-import { ALPHA_STEPS, FLAG } from '../Constant';
+import { FLAG } from '../Constant';
 import { MathUtils } from '../Maths';
 import type { GridConfig } from '../Types';
 import { waveOffset } from '../Wave';
@@ -7,8 +7,12 @@ export class SunRenderer {
     constructor(private ctx: OffscreenCanvasRenderingContext2D) {}
 
     draw(t: number, grid: GridConfig, cols: number, rows: number, W: number, H: number) {
-        const R = Math.max(36, Math.min(W, H) * FLAG.sunRadius);
-        const maxR = R * FLAG.sunReach;
+        const portrait = H > W;
+        const radiusScale = portrait ? 0.9 : 1;
+        const reach = FLAG.sunReach * (portrait ? 0.68 : 1);
+
+        const R = Math.max(36, Math.min(W, H) * FLAG.sunRadius * radiusScale);
+        const maxR = R * reach;
         const cx = W / 2;
         const cy = H / 2;
 
@@ -19,16 +23,6 @@ export class SunRenderer {
         const r1 = Math.min(rows, Math.ceil((cy + maxR) / grid.ch) + margin);
 
         const pulse = 0.9 + 0.1 * Math.sin(t * 2);
-
-        const goldPalette: string[] = [];
-        for (let i = 0; i <= ALPHA_STEPS; i++) {
-            const alpha = (i / ALPHA_STEPS) * FLAG.alphaSun * pulse;
-            goldPalette.push(
-                `rgba(${FLAG.gold.r},${FLAG.gold.g},${FLAG.gold.b},${alpha.toFixed(3)})`
-            );
-        }
-
-        let lastStyle = '';
 
         for (let c = c0; c < c1; c++) {
             const normX = c / cols;
@@ -43,8 +37,10 @@ export class SunRenderer {
                 const dist = Math.hypot(dx, dy);
                 if (dist > maxR) continue;
 
-                const intensity = this.sunIntensity(dx, dy, dist, R);
+                const intensity = this.sunIntensity(dx, dy, dist, R, reach);
                 if (intensity <= 0.05) continue;
+
+                const alpha = MathUtils.sat(intensity) * FLAG.alphaSun * pulse;
 
                 let char: string;
                 if (intensity > 0.85) char = '█';
@@ -52,23 +48,13 @@ export class SunRenderer {
                 else if (intensity > 0.35) char = '▒';
                 else char = '░';
 
-                const bucket = Math.min(
-                    ALPHA_STEPS,
-                    Math.round(MathUtils.sat(intensity) * ALPHA_STEPS)
-                );
-                const style = goldPalette[bucket] as string;
-
-                if (style !== lastStyle) {
-                    this.ctx.fillStyle = style;
-                    lastStyle = style;
-                }
-
+                this.ctx.fillStyle = `rgba(${FLAG.gold.r},${FLAG.gold.g},${FLAG.gold.b},${alpha})`;
                 this.ctx.fillText(char, c * grid.cw, r * grid.ch);
             }
         }
     }
 
-    private sunIntensity(dx: number, dy: number, dist: number, R: number): number {
+    private sunIntensity(dx: number, dy: number, dist: number, R: number, reach: number): number {
         if (dist <= R) {
             return 0.82 + 0.18 * (1 - dist / R);
         }
@@ -85,7 +71,7 @@ export class SunRenderer {
             segDist = Math.abs(seg - idx);
         }
 
-        const rayLen = isWavy ? R * (FLAG.sunReach * 0.78) : R * FLAG.sunReach;
+        const rayLen = isWavy ? R * (reach * 0.78) : R * reach;
         if (dist >= rayLen) return 0;
 
         const along = (dist - R) / (rayLen - R);
