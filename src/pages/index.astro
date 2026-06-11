@@ -9,19 +9,39 @@ import Layout from '@/layouts/Layout.astro';
 ---
 
 <Layout>
-    <Nav />
-
-    <main id="main-content" tabindex="-1">
-        <Hero />
-        <About />
-        <Projects />
-        <Interest />
-        <Contact />
-    </main>
+    <div class="page-shell">
+        <Nav />
+        <main id="main-content" tabindex="-1">
+            <Hero />
+            <About />
+            <Projects />
+            <Interest />
+            <Contact />
+        </main>
+    </div>
 </Layout>
 
 <style>
+    .page-shell {
+        display: contents;
+    }
+
     #main-content:focus:not(:focus-visible) {
         outline: none;
+    }
+
+    @media (max-width: 600px) {
+        .page-shell {
+            display: block;
+            min-height: 100vh;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            -webkit-backdrop-filter: blur(28px) saturate(130%);
+            backdrop-filter: blur(28px) saturate(130%);
+        }
+
+        #main-content {
+            padding: 0;
+        }
     }
 </style>

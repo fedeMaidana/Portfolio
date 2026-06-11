@@ -29,12 +29,6 @@ const { tag: Element = 'section', id, ariaLabelledby, class: className } = Astro
                 border-color var(--transition-base),
                 box-shadow var(--transition-base),
                 transform var(--transition-base);
-            /*
-             * will-change: backdrop-filter, transform was here before.
-             * Removed because it creates a new stacking context that
-             * breaks backdrop-filter compositing on iOS Safari,
-             * causing the glass blur to disappear on project detail pages.
-             */
         }
 
         :scope:hover {
@@ -45,7 +39,6 @@ const { tag: Element = 'section', id, ariaLabelledby, class: className } = Astro
         }
     }
 
-    /* Disable hover lift on touch devices — no real hover, avoids jank */
     @media (hover: none) {
         @scope ( .glass ) {
             :scope:hover {
@@ -58,7 +51,33 @@ const { tag: Element = 'section', id, ariaLabelledby, class: className } = Astro
     @media (max-width: 600px) {
         @scope ( .glass ) {
             :scope {
+                background-color: transparent;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                margin-block-end: 0;
                 padding: 1.5rem;
+                position: relative;
+            }
+
+            :scope:not(:last-child)::after {
+                content: '';
+                display: block;
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                height: 1px;
+                background-color: var(--card-border);
+            }
+
+            :scope:hover {
+                transform: none;
+                background-color: transparent;
+                box-shadow: none;
             }
         }
     }

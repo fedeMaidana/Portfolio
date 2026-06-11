@@ -20,72 +20,79 @@ const { Content } = await render(project);
 ---
 
 <Layout title={`${project.data.title} | Fede Maidana`} description={project.data.description}>
-    <main class="project-container">
-        <Card tag="header" class="header-card">
-            <a href="/" class="back-link">
-                <span class="back-arrow" aria-hidden="true">←</span>
-                <span>Volver al inicio</span>
-            </a>
+    <div class="page-shell">
+        <main class="project-container">
+            <Card tag="header" class="header-card">
+                <a href="/" class="back-link">
+                    <span class="back-arrow" aria-hidden="true">←</span>
+                    <span>Volver al inicio</span>
+                </a>
 
-            <div class="title-block">
-                <span class="project-number">{project.data.number}</span>
-                <h1>{project.data.title}</h1>
-            </div>
+                <div class="title-block">
+                    <span class="project-number">{project.data.number}</span>
+                    <h1>{project.data.title}</h1>
+                </div>
 
-            <p class="project-description">{project.data.description}</p>
+                <p class="project-description">{project.data.description}</p>
 
-            <div class="meta">
-                <span class="category-badge"
-                    >{project.data.category.replace('Application', '')}</span
-                >
-                {
-                    project.data.tags && (
-                        <div class="tags">
-                            {project.data.tags.map((tag: string) => (
-                                <span class="tag">{tag}</span>
-                            ))}
-                        </div>
-                    )
-                }
-            </div>
+                <div class="meta">
+                    <span class="category-badge"
+                        >{project.data.category.replace('Application', '')}</span
+                    >
+                    {
+                        project.data.tags && (
+                            <div class="tags">
+                                {project.data.tags.map((tag: string) => (
+                                    <span class="tag">{tag}</span>
+                                ))}
+                            </div>
+                        )
+                    }
+                </div>
 
-            <div class="actions">
-                {
-                    project.data.link && project.data.link !== '#' && (
-                        <a
-                            href={project.data.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="action-link primary"
-                        >
-                            Ver Proyecto
-                        </a>
-                    )
-                }
-                {
-                    project.data.repoUrl && project.data.repoUrl !== '#' && (
-                        <a
-                            href={project.data.repoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="action-link secondary"
-                        >
-                            Código Fuente
-                        </a>
-                    )
-                }
-            </div>
-        </Card>
+                <div class="actions">
+                    {
+                        project.data.link && project.data.link !== '#' && (
+                            <a
+                                href={project.data.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="action-link primary"
+                            >
+                                Ver Proyecto
+                            </a>
+                        )
+                    }
+                    {
+                        project.data.repoUrl && project.data.repoUrl !== '#' && (
+                            <a
+                                href={project.data.repoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="action-link secondary"
+                            >
+                                Código Fuente
+                            </a>
+                        )
+                    }
+                </div>
+            </Card>
 
-        <Card class="article-card">
-            <article class="prose">
-                <Content />
-            </article>
-        </Card>
-    </main>
+            <Card class="article-card">
+                <article class="prose">
+                    <Content />
+                </article>
+            </Card>
+        </main>
+    </div>
 </Layout>
 
 <style>
+    /* Desktop: el wrapper es invisible para el layout */
+    .page-shell {
+        display: contents;
+    }
+
     @keyframes slideUp {
         from {
             opacity: 0;
@@ -332,13 +339,33 @@ const { Content } = await render(project);
     }
 
     @media (max-width: 600px) {
+        /* Mismo shell que el index: un solo bloque a pantalla completa */
+        .page-shell {
+            display: block;
+            min-height: 100vh;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            -webkit-backdrop-filter: blur(28px) saturate(130%);
+            backdrop-filter: blur(28px) saturate(130%);
+        }
+
         .project-container {
-            padding: 4rem 1.5rem 3rem;
+            padding: 0;
+            animation: none;
         }
 
         .title-block {
             flex-direction: column;
             gap: 0.25rem;
+        }
+
+        .title-block h1 {
+            font-size: clamp(1.75rem, 7vw, 2.25rem);
+        }
+
+        .project-description {
+            font-size: 0.8rem;
+            line-height: 1.6;
         }
 
         .actions {
@@ -347,6 +374,29 @@ const { Content } = await render(project);
 
         .action-link {
             text-align: center;
+        }
+
+        .prose {
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .prose :global(p) {
+            margin-block-end: 1.25rem;
+        }
+
+        .prose :global(h2) {
+            margin-block-start: 2.5rem;
+            margin-block-end: 1rem;
+        }
+
+        .prose :global(h3) {
+            margin-block-start: 2rem;
+            margin-block-end: 0.85rem;
+        }
+
+        .prose :global(ul) {
+            margin-block-end: 1.5rem;
         }
     }
 </style>
