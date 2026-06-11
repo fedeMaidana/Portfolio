@@ -26,4 +26,9 @@ export default defineConfig({
             cssMinify: 'lightningcss',
         },
     },
+    image: {
+        service: {
+            entrypoint: 'astro/assets/services/sharp',
+        },
+    },
 });
