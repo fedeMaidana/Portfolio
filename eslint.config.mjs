@@ -8,7 +8,6 @@ export default [
     },
 
     ...tseslint.configs.strict,
-    ...tseslint.configs.recommended,
     ...eslintPluginAstro.configs.recommended,
     ...eslintPluginAstro.configs['jsx-a11y-strict'],
 

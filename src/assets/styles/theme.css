@@ -36,6 +36,9 @@
         --text-xs: 0.75rem;
         --text-xxs: 0.6875rem;
 
+        --section-title-size: 1rem;
+        --section-title-spacing: 0.18em;
+
         --ease-out-expo: cubic-bezier(0.25, 0.46, 0.45, 0.94);
         --transition-base: 0.3s var(--ease-out-expo);
 

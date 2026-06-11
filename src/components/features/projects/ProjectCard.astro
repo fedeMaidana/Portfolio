@@ -16,6 +16,10 @@ const { project } = Astro.props;
 const { title, number, link = '#', repoUrl = '#', description, category } = project.data;
 const isCurrent = number === '#001';
 
+const hasLink = !isCurrent && link !== '#';
+const hasRepo = repoUrl !== '#';
+const showDivider = hasRepo && (isCurrent || hasLink);
+
 const softwareSchema = getSoftwareSchema({
     title,
     description,
@@ -36,7 +40,7 @@ const stars = await getRepoStars(repoUrl);
         <h3 class="name">{title}</h3>
 
         {
-            stars >= 0 && (
+            stars > 0 && (
                 <div class="stars-badge" aria-label={`${stars} estrellas en GitHub`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" />
@@ -48,21 +52,30 @@ const stars = await getRepoStars(repoUrl);
 
         <div class="status-pill">
             {
-                isCurrent ? (
+                isCurrent && (
                     <Pill class="current-label">
                         <span>Estás aquí</span>
                     </Pill>
-                ) : (
-                    <Pill href={link} ariaLabel={`Visitar web del proyecto ${title}`}>
+                )
+            }
+
+            {
+                hasLink && (
+                    <Pill
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        ariaLabel={`Visitar web del proyecto ${title}`}
+                    >
                         <LinkIcon class="link" aria-hidden="true" />
                     </Pill>
                 )
             }
 
             {
-                repoUrl && (
+                hasRepo && (
                     <>
-                        <div class="divider" aria-hidden="true" />
+                        {showDivider && <div class="divider" aria-hidden="true" />}
                         <Pill
                             href={repoUrl}
                             target="_blank"
@@ -131,7 +144,7 @@ const stars = await getRepoStars(repoUrl);
         }
 
         .stars-badge svg {
-            fill: rgb(200, 159, 39); /* O podés usar un #eab308 si preferís dorado */
+            fill: rgb(200, 159, 39);
             transform: translateY(-1px);
         }
 

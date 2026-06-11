@@ -4,7 +4,7 @@ export function getPersonSchema(siteUrl: URL | string | undefined) {
         '@type': 'Person',
         name: 'Federico Maidana',
         url: siteUrl,
-        image: siteUrl ? `${siteUrl}og-image.png` : undefined,
+        image: siteUrl ? new URL('/pictures/seo-1.jpeg', siteUrl).href : undefined,
         jobTitle: 'Backend Developer',
         description: 'Backend Developer enfocado en rendimiento y código seguro.',
         address: {
