@@ -18,7 +18,9 @@ export class FlagRenderer {
         const cols = Math.ceil(W / grid.cw) + 1;
         const rows = Math.ceil(H / grid.ch) + 1;
 
-        this.cloth.draw(t, grid, cols, rows);
+        const foldScale = H > W ? 1.7 : 1;
+
+        this.cloth.draw(t, grid, cols, rows, foldScale);
         this.sun.draw(t, grid, cols, rows, W, H);
     }
 }
