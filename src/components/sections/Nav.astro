@@ -240,13 +240,18 @@ const languages = LOCALES.map((locale) => ({
     @media (max-width: 600px) {
         @scope ( nav ) {
             :scope {
-                position: static;
+                position: relative;
                 backdrop-filter: none;
                 -webkit-backdrop-filter: none;
                 box-shadow: none;
                 margin-block-end: 0;
                 padding: 1.25rem 1.5rem;
                 border-block-end: 1px solid var(--card-border);
+            }
+
+            .lang-list {
+                min-width: 8.5rem;
+                max-width: calc(100vw - 3rem);
             }
         }
     }
