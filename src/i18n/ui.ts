@@ -1,4 +1,4 @@
-export const LOCALES = ['es', 'en'] as const;
+export const LOCALES = ['es', 'en', 'fr'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = 'es';
@@ -19,6 +19,7 @@ export const ui = {
         'nav.lang.aria': 'Cambiar idioma',
         'lang.es': 'Español',
         'lang.en': 'Inglés',
+        'lang.fr': 'Francés',
 
         'hero.available': 'Disponible para proyectos',
         'hero.role': 'Backend Developer',
@@ -76,6 +77,7 @@ export const ui = {
         'nav.lang.aria': 'Change language',
         'lang.es': 'Spanish',
         'lang.en': 'English',
+        'lang.fr': 'French',
 
         'hero.available': 'Available for projects',
         'hero.role': 'Backend Developer',
@@ -117,6 +119,65 @@ export const ui = {
         'contact.form.message': 'Message',
         'contact.form.submit': 'Send message',
         'contact.footnote': 'I reply within 24h.',
+    },
+    fr: {
+        'meta.title': 'Federico Maidana | Portfolio',
+        'meta.description':
+            'Développeur backend axé sur la performance et le code sûr. Mar del Plata, Argentine.',
+        'meta.personDescription': 'Développeur backend axé sur la performance et le code sûr.',
+
+        'skip.label': 'Aller au contenu principal',
+
+        'nav.aria': 'Navigation principale',
+        'nav.logo': 'Portfolio',
+        'nav.theme.aria': 'Basculer entre le mode clair et sombre',
+        'nav.theme.title': 'Changer de thème',
+        'nav.lang.aria': 'Changer de langue',
+        'lang.es': 'Espagnol',
+        'lang.en': 'Anglais',
+        'lang.fr': 'Français',
+
+        'hero.available': 'Disponible pour des projets',
+        'hero.role': 'Développeur Backend',
+        'hero.location': 'Mar del Plata, Argentine',
+        'hero.photoAlt': 'Photo de Federico Maidana',
+
+        'about.title': 'À propos',
+        'about.history':
+            "Je suis passé de la création d'interfaces web à la conception de la logique backend.",
+        'about.focus.1': 'Aujourd’hui, mon écosystème principal est ',
+        'about.focus.2':
+            '. Il me donne le contrôle d’un langage bas niveau sans renoncer à la sûreté mémoire.',
+        'about.perspective.1': 'Mon parcours en ',
+        'about.perspective.strong1': 'frontend',
+        'about.perspective.2': ' me permet de concevoir des ',
+        'about.perspective.strong2': 'API',
+        'about.perspective.3':
+            ' et des architectures pensées non seulement depuis le système, mais aussi depuis le produit et l’expérience de celles et ceux qui les utilisent.',
+
+        'projects.title': 'Projets',
+
+        'card.youAreHere': 'Vous êtes ici',
+        'card.stars.aria': '{stars} étoiles sur GitHub',
+        'card.visit.aria': 'Visiter le site du projet {title}',
+        'card.repo.aria': 'Voir le code source du projet {title} sur GitHub',
+        'card.details.aria': 'Voir les détails du projet {title}',
+
+        'detail.back': 'Retour à l’accueil',
+        'detail.view': 'Voir le projet',
+        'detail.source': 'Code source',
+
+        'interests.title': 'Centres d’intérêt',
+
+        'contact.title': 'Contact',
+        'contact.cta.1': 'Vous avez un projet en tête, ou envie de parler ',
+        'contact.cta.2': ', architecture ou systèmes ?',
+        'contact.form.aria': 'Formulaire de contact',
+        'contact.form.name': 'Nom',
+        'contact.form.email': 'Votre e-mail',
+        'contact.form.message': 'Message',
+        'contact.form.submit': 'Envoyer le message',
+        'contact.footnote': 'Je réponds en moins de 24h.',
     },
 } as const satisfies Record<Locale, Record<string, string>>;
 

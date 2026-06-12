@@ -24,6 +24,7 @@ export function getPersonSchema(siteUrl: URL | string | undefined, description: 
         knowsLanguage: [
             { '@type': 'Language', name: 'Spanish' },
             { '@type': 'Language', name: 'English' },
+            { '@type': 'Language', name: 'French' },
         ],
     });
 }

@@ -15,5 +15,9 @@
             "Anime",
             "Snowboarding"
         ]
+    },
+    {
+        "id": "fr",
+        "items": ["Musique", "Surf", "Boxe", "Voitures", "Mode", "Jeux vidéo", "Anime", "Snowboard"]
     }
 ]

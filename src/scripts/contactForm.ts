@@ -5,7 +5,7 @@ interface ContactResponse {
     error?: string;
 }
 
-type Lang = 'es' | 'en';
+type Lang = 'es' | 'en' | 'fr';
 
 const MESSAGES: Record<Lang, { sending: string; ok: string; error: string; network: string }> = {
     es: {
@@ -20,10 +20,17 @@ const MESSAGES: Record<Lang, { sending: string; ok: string; error: string; netwo
         error: "Couldn't send the message. Try again or reach me on LinkedIn.",
         network: 'Connection failed. Check your network and try again.',
     },
+    fr: {
+        sending: 'Envoi…',
+        ok: 'C’est fait ! Je vous réponds en moins de 24h.',
+        error: 'Échec de l’envoi. Réessayez ou écrivez-moi sur LinkedIn.',
+        network: 'La connexion a échoué. Vérifiez votre réseau et réessayez.',
+    },
 };
 
 function pageLang(): Lang {
-    return document.documentElement.lang === 'en' ? 'en' : 'es';
+    const lang = document.documentElement.lang;
+    return lang === 'en' || lang === 'fr' ? lang : 'es';
 }
 
 function setStatus(el: HTMLElement | null, kind: '' | 'ok' | 'error', message: string): void {
