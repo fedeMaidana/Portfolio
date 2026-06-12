@@ -1,12 +1,16 @@
 ---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
 import { getInterests } from '@/services/content';
 import Card from '../ui/Card.astro';
 
-const interests = await getInterests();
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const interests = await getInterests(lang);
 ---
 
 <Card class="interests" ariaLabelledby="interests-title">
-    <h2 id="interests-title" class="interests-title">Intereses</h2>
+    <h2 id="interests-title" class="interests-title">{t('interests.title')}</h2>
 
     <ul class="interests-list">
         {

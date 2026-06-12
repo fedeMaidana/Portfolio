@@ -1,9 +1,13 @@
 ---
 import Card from '@/components/ui/Card.astro';
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <Card class="about" ariaLabelledby="about-title">
-    <h2 id="about-title" class="about-title">Sobre mí</h2>
+    <h2 id="about-title" class="about-title">{t('about.title')}</h2>
 
     <div class="bio-container">
         <div class="trajectory">
@@ -13,19 +17,18 @@ import Card from '@/components/ui/Card.astro';
         </div>
 
         <div class="bio-blocks">
-            <p class="history">Pasé de construir interfaces web a diseñar la logica del backend.</p>
+            <p class="history">{t('about.history')}</p>
 
             <div class="focus-block">
                 <p class="current-focus">
-                    Actualmente mi ecosistema principal es <strong>Rust</strong>. Me da el control
-                    de un lenguaje de bajo nivel sin renunciar a la seguridad de memoria.
+                    {t('about.focus.1')}<strong>Rust</strong>{t('about.focus.2')}
                 </p>
             </div>
 
             <p class="perspective">
-                Mi background en <strong>frontend</strong> me permite diseñar <strong>API's</strong> y
-                arquitecturas pensadas no solo desde el sistema, sino desde el producto y la experiencia
-                de quien las utiliza.
+                {t('about.perspective.1')}<strong>{t('about.perspective.strong1')}</strong>{
+                    t('about.perspective.2')
+                }<strong>{t('about.perspective.strong2')}</strong>{t('about.perspective.3')}
             </p>
         </div>
     </div>

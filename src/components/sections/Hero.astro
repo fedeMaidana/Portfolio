@@ -1,14 +1,18 @@
 ---
 import profile from '@/assets/pictures/me.jpg';
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
 import { Image } from 'astro:assets';
 import Card from '../ui/Card.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <Card tag="header" class="hero">
     <div class="hero-layout">
         <div class="status-line">
             <span class="status-dot" aria-hidden="true"></span>
-            <span class="status-label">Disponible para proyectos</span>
+            <span class="status-label">{t('hero.available')}</span>
         </div>
 
         <div class="hero-text">
@@ -17,12 +21,12 @@ import Card from '../ui/Card.astro';
                     <span class="first-name">Federico</span>
                     <em class="last-name">Maidana</em>
                 </h1>
-                <p class="role">Backend Developer</p>
+                <p class="role">{t('hero.role')}</p>
             </hgroup>
 
             <div class="meta-row">
                 <span class="location-pin" aria-hidden="true">◆</span>
-                <span class="location">Mar del Plata, Argentina</span>
+                <span class="location">{t('hero.location')}</span>
             </div>
         </div>
 
@@ -30,7 +34,7 @@ import Card from '../ui/Card.astro';
             <div class="profile-ring">
                 <Image
                     src={profile}
-                    alt="Foto de Federico Maidana"
+                    alt={t('hero.photoAlt')}
                     width={160}
                     height={160}
                     class="profile-img"

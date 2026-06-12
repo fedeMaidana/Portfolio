@@ -5,6 +5,27 @@ interface ContactResponse {
     error?: string;
 }
 
+type Lang = 'es' | 'en';
+
+const MESSAGES: Record<Lang, { sending: string; ok: string; error: string; network: string }> = {
+    es: {
+        sending: 'Enviando…',
+        ok: '¡Listo! Te respondo en menos de 24h.',
+        error: 'No se pudo enviar. Probá de nuevo o escribime por LinkedIn.',
+        network: 'Falló la conexión. Revisá tu red e intentá otra vez.',
+    },
+    en: {
+        sending: 'Sending…',
+        ok: "Done! I'll get back to you within 24h.",
+        error: "Couldn't send the message. Try again or reach me on LinkedIn.",
+        network: 'Connection failed. Check your network and try again.',
+    },
+};
+
+function pageLang(): Lang {
+    return document.documentElement.lang === 'en' ? 'en' : 'es';
+}
+
 function setStatus(el: HTMLElement | null, kind: '' | 'ok' | 'error', message: string): void {
     if (!el) return;
     el.textContent = message;
@@ -26,12 +47,13 @@ async function handleSubmit(e: Event): Promise<void> {
         return;
     }
 
-    const originalLabel = label?.textContent ?? 'Enviar mensaje';
+    const messages = MESSAGES[pageLang()];
+    const originalLabel = label?.textContent ?? '';
     const payload = Object.fromEntries(new FormData(form).entries());
 
     setStatus(status, '', '');
     button.disabled = true;
-    if (label) label.textContent = 'Enviando…';
+    if (label) label.textContent = messages.sending;
 
     try {
         const res = await fetch(ENDPOINT, {
@@ -47,16 +69,12 @@ async function handleSubmit(e: Event): Promise<void> {
 
         if (res.ok && result.success) {
             form.reset();
-            setStatus(status, 'ok', '¡Listo! Te respondo en menos de 24h.');
+            setStatus(status, 'ok', messages.ok);
         } else {
-            setStatus(
-                status,
-                'error',
-                result.error ?? 'No se pudo enviar. Probá de nuevo o escribime por LinkedIn.'
-            );
+            setStatus(status, 'error', messages.error);
         }
     } catch {
-        setStatus(status, 'error', 'Falló la conexión. Revisá tu red e intentá otra vez.');
+        setStatus(status, 'error', messages.network);
     } finally {
         button.disabled = false;
         if (label) label.textContent = originalLabel;

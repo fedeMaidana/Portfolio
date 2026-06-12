@@ -5,7 +5,24 @@ import { defineConfig, envField } from 'astro/config';
 export default defineConfig({
     site: 'https://maidana.dev',
     adapter: vercel(),
-    integrations: [sitemap()],
+    i18n: {
+        defaultLocale: 'es',
+        locales: ['es', 'en'],
+        routing: {
+            prefixDefaultLocale: false,
+        },
+    },
+    integrations: [
+        sitemap({
+            i18n: {
+                defaultLocale: 'es',
+                locales: {
+                    es: 'es',
+                    en: 'en',
+                },
+            },
+        }),
+    ],
     env: {
         schema: {
             RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),

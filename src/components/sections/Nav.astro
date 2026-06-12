@@ -1,20 +1,68 @@
 ---
+import { LOCALES } from '@/i18n/ui';
+import { getLangFromUrl, pathForLocale, useTranslations } from '@/i18n/utils';
+import ChevronDownIcon from '../ui/icons/ChevronDownIcon.astro';
+import GlobeIcon from '../ui/icons/GlobeIcon.astro';
 import MoonIcon from '../ui/icons/MoonIcon.astro';
 import SunIcon from '../ui/icons/SunIcon.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const languages = LOCALES.map((locale) => ({
+    locale,
+    label: t(`lang.${locale}`),
+    href: pathForLocale(Astro.url.pathname, locale),
+    current: locale === lang,
+}));
 ---
 
-<nav aria-label="Navegación principal" class="fade-in">
-    <a href="/" class="logo" aria-label="Portafolio">Portafolio</a>
+<nav aria-label={t('nav.aria')} class="fade-in">
+    <a href={pathForLocale('/', lang)} class="logo" aria-label={t('nav.logo')}>
+        {t('nav.logo')}
+    </a>
 
-    <button
-        class="theme-toggle"
-        type="button"
-        aria-label="Cambiar entre modo claro y oscuro"
-        title="Cambiar tema"
-    >
-        <SunIcon class="icon-sun" />
-        <MoonIcon class="icon-moon" />
-    </button>
+    <div class="nav-actions">
+        <details class="lang-menu">
+            <summary aria-label={t('nav.lang.aria')} title={t('nav.lang.aria')}>
+                <GlobeIcon class="globe" />
+                <span class="lang-current">{lang.toUpperCase()}</span>
+                <ChevronDownIcon class="chevron" />
+            </summary>
+
+            <ul class="lang-list">
+                {
+                    languages.map(({ locale, label, href, current }) => (
+                        <li>
+                            <a
+                                href={href}
+                                hreflang={locale}
+                                lang={locale}
+                                aria-current={current ? 'true' : undefined}
+                            >
+                                <span>{label}</span>
+                                {current && (
+                                    <span class="current-marker" aria-hidden="true">
+                                        ◆
+                                    </span>
+                                )}
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
+        </details>
+
+        <button
+            class="theme-toggle"
+            type="button"
+            aria-label={t('nav.theme.aria')}
+            title={t('nav.theme.title')}
+        >
+            <SunIcon class="icon-sun" />
+            <MoonIcon class="icon-moon" />
+        </button>
+    </div>
 </nav>
 
 <style>
@@ -43,6 +91,105 @@ import SunIcon from '../ui/icons/SunIcon.astro';
             color: var(--text);
             text-decoration: none;
         }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ─── Selector de idioma ─── */
+
+        .lang-menu {
+            position: relative;
+        }
+
+        .lang-menu summary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            height: 36px;
+            padding-inline: 0.6rem;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            list-style: none;
+            transition:
+                color 0.25s ease,
+                border-color 0.25s ease,
+                background-color 0.25s ease;
+        }
+
+        .lang-menu summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .lang-menu summary:hover,
+        .lang-menu[open] summary {
+            color: var(--text);
+            border-color: var(--card-border);
+            background-color: var(--accent-hover-bg);
+        }
+
+        .lang-menu summary :global(.chevron) {
+            transition: transform 0.25s ease;
+        }
+
+        .lang-menu[open] summary :global(.chevron) {
+            transform: rotate(180deg);
+        }
+
+        .lang-list {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            min-width: 9.5rem;
+            margin: 0;
+            padding: 0.35rem;
+            list-style: none;
+            background-color: var(--bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+            z-index: 10;
+        }
+
+        .lang-list a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.5rem 0.65rem;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition:
+                color 0.25s ease,
+                background-color 0.25s ease;
+        }
+
+        .lang-list a:hover {
+            color: var(--text);
+            background-color: var(--accent-hover-bg);
+        }
+
+        .lang-list a[aria-current='true'] {
+            color: var(--accent);
+        }
+
+        .current-marker {
+            font-size: 0.45rem;
+            color: var(--accent);
+            opacity: 0.6;
+        }
+
+        /* ─── Toggle de tema ─── */
 
         .theme-toggle {
             display: inline-flex;
@@ -106,5 +253,6 @@ import SunIcon from '../ui/icons/SunIcon.astro';
 </style>
 
 <script>
+    import '../../scripts/langMenu';
     import '../../scripts/themeToggle';
 </script>

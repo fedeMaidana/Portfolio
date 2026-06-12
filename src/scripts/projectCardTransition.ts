@@ -11,12 +11,16 @@ let returnSlug: string | null = null;
 const prefersReducedMotion = (): boolean =>
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const isHomePath = (pathname: string): boolean =>
+    pathname === '/' || /^\/[a-z]{2}(-[a-z]{2})?\/?$/i.test(pathname);
+
+const isProjectPath = (pathname: string): boolean => pathname.includes('/projects/');
+
 const nextFrames = (): Promise<void> =>
     new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 
 const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Convierte el rect de la card en un clip-path inset con esquinas redondeadas. */
 function rectToInset(rect: DOMRect, radius = 16): string {
     const top = Math.max(0, rect.top);
     const left = Math.max(0, rect.left);
@@ -44,7 +48,6 @@ async function handleCardClick(e: Event): Promise<void> {
     const href = link.getAttribute('href');
     if (!href) return;
 
-    // Con reduced motion dejamos que el router navegue normalmente.
     if (prefersReducedMotion()) return;
 
     e.preventDefault();
@@ -66,20 +69,17 @@ async function handleCardClick(e: Event): Promise<void> {
     const rect = card.getBoundingClientRect();
     card.classList.add('is-exiting');
 
-    // Panel de vidrio fullscreen, recortado al tamaño de la card.
     const overlay = createOverlay();
     overlay.style.clipPath = rectToInset(rect);
     overlay.style.opacity = '0';
     document.body.appendChild(overlay);
 
-    // 1. El panel aparece sobre la card mientras su contenido se disuelve.
     await overlay.animate([{ opacity: 0 }, { opacity: 1 }], {
         duration: 200,
         easing: 'ease-out',
         fill: 'forwards',
     }).finished;
 
-    // 2. El panel se expande hasta cubrir la pantalla.
     overlay.classList.add('is-expanding');
     await overlay.animate([{ clipPath: rectToInset(rect) }, { clipPath: 'inset(0px round 0px)' }], {
         duration: 600,
@@ -90,7 +90,6 @@ async function handleCardClick(e: Event): Promise<void> {
     overlay.style.backgroundColor = 'var(--bg)';
     overlay.style.backdropFilter = 'none';
 
-    // 3. Navegamos con la pantalla ya cubierta.
     pendingCover = 'detail';
     navigate(href, { info: { skipVT: true } });
 }
@@ -103,7 +102,6 @@ document.addEventListener('astro:before-swap', (event) => {
 
     if (info?.skipVT) e.viewTransition.skipTransition();
 
-    // Ida: el detalle llega cubierto para que no haya flash.
     if (pendingCover === 'detail') {
         const cover = createOverlay(e.newDocument);
         cover.style.backgroundColor = 'var(--bg)';
@@ -111,11 +109,10 @@ document.addEventListener('astro:before-swap', (event) => {
         return;
     }
 
-    // Vuelta: detalle → index.
     const fromPath = e.from.pathname;
     const toPath = e.to.pathname;
 
-    if (fromPath.startsWith('/projects/') && toPath === '/' && !prefersReducedMotion()) {
+    if (isProjectPath(fromPath) && isHomePath(toPath) && !prefersReducedMotion()) {
         returnSlug = fromPath.split('/').filter(Boolean).pop() ?? null;
         pendingCover = 'index';
 
@@ -143,13 +140,12 @@ async function revealIndex(overlay: HTMLElement): Promise<void> {
     const slug = returnSlug;
     returnSlug = null;
 
-    // Dejamos terminar el fade de la VT por defecto antes de contraer.
     await wait(180);
     await nextFrames();
 
     const card = slug
         ? document.querySelector<HTMLElement>(
-              `.work-card:has(.main-link[href="/projects/${slug}"])`
+              `.work-card:has(.main-link[href$="/projects/${slug}"])`
           )
         : null;
 

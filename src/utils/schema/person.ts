@@ -1,4 +1,4 @@
-export function getPersonSchema(siteUrl: URL | string | undefined) {
+export function getPersonSchema(siteUrl: URL | string | undefined, description: string) {
     return JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Person',
@@ -6,7 +6,7 @@ export function getPersonSchema(siteUrl: URL | string | undefined) {
         url: siteUrl,
         image: siteUrl ? new URL('/pictures/seo-1.jpeg', siteUrl).href : undefined,
         jobTitle: 'Backend Developer',
-        description: 'Backend Developer enfocado en rendimiento y código seguro.',
+        description,
         address: {
             '@type': 'PostalAddress',
             addressLocality: 'Mar del Plata',

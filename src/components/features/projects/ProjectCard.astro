@@ -1,5 +1,7 @@
 ---
+import { getLangFromUrl, interpolate, pathForLocale, useTranslations } from '@/i18n/utils';
 import { getRepoStars } from '@/services/github';
+import { projectSlug } from '@/services/content';
 import { getSoftwareSchema } from '@/utils/schema';
 import { type CollectionEntry } from 'astro:content';
 import ArrowIcon from '../../ui/icons/ArrowIcon.astro';
@@ -12,6 +14,9 @@ interface Props {
     project: CollectionEntry<'projects'>;
 }
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 const { project } = Astro.props;
 const { title, number, link = '#', repoUrl = '#', description, category } = project.data;
 const isCurrent = number === '#001';
@@ -19,6 +24,9 @@ const isCurrent = number === '#001';
 const hasLink = !isCurrent && link !== '#';
 const hasRepo = repoUrl !== '#';
 const showDivider = hasRepo && (isCurrent || hasLink);
+
+const slug = projectSlug(project);
+const detailHref = pathForLocale(`/projects/${slug}`, lang);
 
 const softwareSchema = getSoftwareSchema({
     title,
@@ -41,7 +49,7 @@ const stars = await getRepoStars(repoUrl);
 
         {
             stars > 0 && (
-                <div class="stars-badge" aria-label={`${stars} estrellas en GitHub`}>
+                <div class="stars-badge" aria-label={interpolate(t('card.stars.aria'), { stars })}>
                     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" />
                     </svg>
@@ -54,7 +62,7 @@ const stars = await getRepoStars(repoUrl);
             {
                 isCurrent && (
                     <Pill class="current-label">
-                        <span>Estás aquí</span>
+                        <span>{t('card.youAreHere')}</span>
                     </Pill>
                 )
             }
@@ -65,7 +73,7 @@ const stars = await getRepoStars(repoUrl);
                         href={link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        ariaLabel={`Visitar web del proyecto ${title}`}
+                        ariaLabel={interpolate(t('card.visit.aria'), { title })}
                     >
                         <LinkIcon class="link" aria-hidden="true" />
                     </Pill>
@@ -80,7 +88,7 @@ const stars = await getRepoStars(repoUrl);
                             href={repoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            ariaLabel={`Ver código fuente del proyecto ${title} en GitHub`}
+                            ariaLabel={interpolate(t('card.repo.aria'), { title })}
                         >
                             <GithubIcon class="github" aria-hidden="true" />
                         </Pill>
@@ -90,9 +98,9 @@ const stars = await getRepoStars(repoUrl);
         </div>
 
         <a
-            href={`/projects/${project.id}`}
+            href={detailHref}
             class="main-link"
-            aria-label={`Ver detalles del proyecto ${title}`}
+            aria-label={interpolate(t('card.details.aria'), { title })}
         >
             <ArrowIcon class="arrow" />
         </a>

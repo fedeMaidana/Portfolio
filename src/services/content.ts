@@ -1,18 +1,34 @@
+import { DEFAULT_LOCALE, type Locale } from '@/i18n/ui';
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 
 export type Project = CollectionEntry<'projects'>;
 
-export async function getSortedProjects(): Promise<Project[]> {
-    const projects = await getCollection('projects');
-    return projects.sort((a, b) => b.data.number.localeCompare(a.data.number));
+function idLocale(id: string): string {
+    if (!id.includes('/')) return DEFAULT_LOCALE;
+    return id.slice(0, id.indexOf('/'));
 }
 
-/**
- * Devuelve la lista de intereses. Si la entrada no existe, devuelve un arreglo
- * vacío en lugar de romper el render (la Content Layer API puede devolver
- * `undefined`).
- */
-export async function getInterests(): Promise<string[]> {
-    const entry = await getEntry('interests', 'list');
+export function projectSlug(project: Project): string {
+    return project.id.split('/').pop() ?? project.id;
+}
+
+export async function getProjectsForLocale(locale: Locale): Promise<Project[]> {
+    const all = await getCollection('projects');
+    const base = all.filter((project: Project) => idLocale(project.id) === DEFAULT_LOCALE);
+
+    return base
+        .map(
+            (project: Project) =>
+                all.find(
+                    (candidate: Project) =>
+                        idLocale(candidate.id) === locale &&
+                        projectSlug(candidate) === projectSlug(project)
+                ) ?? project
+        )
+        .sort((a: Project, b: Project) => b.data.number.localeCompare(a.data.number));
+}
+
+export async function getInterests(locale: Locale): Promise<string[]> {
+    const entry = (await getEntry('interests', locale)) ?? (await getEntry('interests', 'es'));
     return entry?.data.items ?? [];
 }

@@ -1,13 +1,17 @@
 ---
-import { getSortedProjects, type Project } from '@/services/content';
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+import { getProjectsForLocale, type Project } from '@/services/content';
 import ProjectCard from '../features/projects/ProjectCard.astro';
 import Card from '../ui/Card.astro';
 
-const projects = await getSortedProjects();
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const projects = await getProjectsForLocale(lang);
 ---
 
 <Card class="projects" ariaLabelledby="projects-title">
-    <h2 id="projects-title" class="projects-title">Proyectos</h2>
+    <h2 id="projects-title" class="projects-title">{t('projects.title')}</h2>
 
     <div class="work-grid" role="list">
         {

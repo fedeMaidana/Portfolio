@@ -1,8 +1,11 @@
 ---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
-<a href="#main-content" class="skip-to-content">Saltar al contenido principal</a>
+<a href="#main-content" class="skip-to-content">{t('skip.label')}</a>
 
 <style>
     .skip-to-content {

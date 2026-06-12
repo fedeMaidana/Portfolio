@@ -33,7 +33,7 @@ La integración con los workspaces habla directamente con los sockets Unix de `H
 
 ### Colores dinámicos
 
-La barra carga el color de acento desde `hyprcolors`, así se adapta automáticamente al wallpaper.
+La barra carga el color de acento desde `hyprcolor`, así se adapta automáticamente al wallpaper.
 
 ![Hyprbar renderizando la barra superior, foto 1](../../assets/pictures/hyprbar_1.png)
 

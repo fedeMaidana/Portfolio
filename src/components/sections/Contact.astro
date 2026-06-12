@@ -1,5 +1,9 @@
 ---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
 import Card from '../ui/Card.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const socials = [
     {
@@ -16,26 +20,25 @@ const socials = [
 ---
 
 <Card tag="footer" class="contact" ariaLabelledby="contact-title">
-    <h2 id="contact-title" class="contact-title">Contacto</h2>
+    <h2 id="contact-title" class="contact-title">{t('contact.title')}</h2>
 
     <p class="contact-cta">
-        ¿Tenés un proyecto en mente o querés charlar sobre <strong>Rust</strong>, arquitectura o
-        sistemas?
+        {t('contact.cta.1')}<strong>Rust</strong>{t('contact.cta.2')}
     </p>
 
-    <form id="contact-form" class="contact-form" aria-label="Formulario de contacto" novalidate>
+    <form id="contact-form" class="contact-form" aria-label={t('contact.form.aria')} novalidate>
         <div class="field">
-            <label for="cf-name">Nombre</label>
+            <label for="cf-name">{t('contact.form.name')}</label>
             <input id="cf-name" name="name" type="text" autocomplete="name" required />
         </div>
 
         <div class="field">
-            <label for="cf-email">Tu correo</label>
+            <label for="cf-email">{t('contact.form.email')}</label>
             <input id="cf-email" name="email" type="email" autocomplete="email" required />
         </div>
 
         <div class="field">
-            <label for="cf-message">Mensaje</label>
+            <label for="cf-message">{t('contact.form.message')}</label>
             <textarea id="cf-message" name="message" rows="4" required></textarea>
         </div>
 
@@ -49,7 +52,7 @@ const socials = [
         />
 
         <button type="submit" class="submit-btn">
-            <span class="btn-label">Enviar mensaje</span>
+            <span class="btn-label">{t('contact.form.submit')}</span>
             <span class="btn-arrow" aria-hidden="true">→</span>
         </button>
 
@@ -71,7 +74,7 @@ const socials = [
 
     <p class="contact-footnote">
         <span class="footnote-marker" aria-hidden="true">◆</span>
-        Respondo en menos de 24h.
+        {t('contact.footnote')}
     </p>
 </Card>
 

@@ -1,6 +1,19 @@
 [
     {
-        "id": "list",
+        "id": "es",
         "items": ["Música", "Surf", "Boxeo", "Coches", "Moda", "Videojuegos", "Anime", "Snowboard"]
+    },
+    {
+        "id": "en",
+        "items": [
+            "Music",
+            "Surfing",
+            "Boxing",
+            "Cars",
+            "Fashion",
+            "Video games",
+            "Anime",
+            "Snowboarding"
+        ]
     }
 ]

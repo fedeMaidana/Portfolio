@@ -1,4 +1,6 @@
 ---
+import { LOCALES } from '@/i18n/ui';
+import { getLangFromUrl, pathForLocale, useTranslations } from '@/i18n/utils';
 import { getPersonSchema } from '@/utils/schema';
 
 interface Props {
@@ -7,15 +9,27 @@ interface Props {
     image?: string;
 }
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 const {
-    title = 'Federico Maidana | Portafolio',
-    description = 'Backend Developer enfocado en rendimiento y código seguro. Mar del Plata, Argentina.',
+    title = t('meta.title'),
+    description = t('meta.description'),
     image = '/pictures/seo-1.jpeg',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const imageURL = new URL(image, Astro.site);
-const personSchema = getPersonSchema(Astro.site);
+const personSchema = getPersonSchema(Astro.site, t('meta.personDescription'));
+
+const ogLocale = lang === 'en' ? 'en_US' : 'es_AR';
+const ogLocaleAlternate = lang === 'en' ? 'es_AR' : 'en_US';
+
+const alternates = LOCALES.map((locale) => ({
+    locale,
+    href: new URL(pathForLocale(Astro.url.pathname, locale), Astro.site),
+}));
+const defaultHref = new URL(pathForLocale(Astro.url.pathname, 'es'), Astro.site);
 ---
 
 <title>{title}</title>
@@ -23,9 +37,13 @@ const personSchema = getPersonSchema(Astro.site);
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href={canonicalURL} />
 
+{alternates.map(({ locale, href }) => <link rel="alternate" hreflang={locale} href={href} />)}
+<link rel="alternate" hreflang="x-default" href={defaultHref} />
+
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Federico Maidana" />
-<meta property="og:locale" content="es_AR" />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:locale:alternate" content={ogLocaleAlternate} />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
