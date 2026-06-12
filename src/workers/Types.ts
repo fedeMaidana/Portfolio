@@ -1,3 +1,18 @@
+// ── Theme ───────────────────────────────────────────────────
+
+export type ThemeName = 'light' | 'dark';
+
+export interface RGB {
+    r: number;
+    g: number;
+    b: number;
+}
+
+export interface ThemeColors {
+    bg: string;
+    palette: readonly [RGB, RGB, RGB];
+}
+
 // ── Payloads ───────────────────────────────────────────────
 
 export interface CanvasInit {
@@ -19,6 +34,10 @@ export interface MotionPreference {
 
 export interface VisibilityState {
     hidden: boolean;
+}
+
+export interface ThemePreference {
+    theme: ThemeName;
 }
 
 // ── Mensajes ───────────────────────────────────────────────
@@ -43,7 +62,17 @@ export interface VisibilityMessage {
     payload: VisibilityState;
 }
 
-export type WorkerMessage = InitMessage | ResizeMessage | MotionMessage | VisibilityMessage;
+export interface ThemeMessage {
+    type: 'theme';
+    payload: ThemePreference;
+}
+
+export type WorkerMessage =
+    | InitMessage
+    | ResizeMessage
+    | MotionMessage
+    | VisibilityMessage
+    | ThemeMessage;
 
 // ── Render ─────────────────────────────────────────────────
 

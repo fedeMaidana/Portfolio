@@ -1,5 +1,6 @@
+import { THEMES } from '../Constant';
 import { GlyphAtlas } from '../GlyphAtlas';
-import type { GridConfig } from '../Types';
+import type { GridConfig, ThemeName } from '../Types';
 import { ClothRenderer } from './ClothRenderer';
 import { SunRenderer } from './SunRenderer';
 
@@ -12,10 +13,10 @@ export class FlagRenderer {
 
     constructor(private ctx: OffscreenCanvasRenderingContext2D) {}
 
-    draw(t: number, grid: GridConfig, W: number, H: number): void {
-        const key = `${grid.cw}x${grid.ch}`;
+    draw(t: number, grid: GridConfig, W: number, H: number, theme: ThemeName): void {
+        const key = `${grid.cw}x${grid.ch}:${theme}`;
         if (!this.atlas || key !== this.atlasKey) {
-            this.atlas = new GlyphAtlas(grid);
+            this.atlas = new GlyphAtlas(grid, THEMES[theme].palette);
             this.atlasKey = key;
         }
 

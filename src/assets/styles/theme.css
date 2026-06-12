@@ -2,11 +2,14 @@
     :root {
         color-scheme: light dark;
 
-        --bg: light-dark(oklch(98% 0.01 240), oklch(0% 0 0));
+        --bg: light-dark(#f1f4f8, #0a0d10);
 
         --text: light-dark(oklch(15% 0.01 40), oklch(92% 0.01 40));
-        --text-muted: light-dark(oklch(60% 0.01 40), oklch(80% 0.01 40));
-        --accent: light-dark(oklch(55% 0.12 210), oklch(76% 0.12 210));
+        --text-muted: light-dark(oklch(47% 0.01 40), oklch(80% 0.01 40));
+        --accent: light-dark(oklch(48% 0.12 210), oklch(76% 0.12 210));
+
+        --color-ok: light-dark(oklch(50% 0.15 150), oklch(72% 0.19 145));
+        --color-error: light-dark(oklch(52% 0.19 25), oklch(70% 0.19 25));
 
         --accent-hover-bg: color-mix(in srgb, var(--accent), transparent 95%);
         --accent-hover-border: color-mix(in srgb, var(--accent), transparent 75%);

@@ -74,8 +74,8 @@ import Card from '../ui/Card.astro';
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background-color: oklch(72% 0.19 145);
-            box-shadow: 0 0 6px oklch(72% 0.19 145 / 0.6);
+            background-color: var(--color-ok);
+            box-shadow: 0 0 6px color-mix(in srgb, var(--color-ok), transparent 40%);
             animation: pulse 2.5s ease-in-out infinite;
         }
 
@@ -94,7 +94,7 @@ import Card from '../ui/Card.astro';
             font-size: var(--text-xxs);
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: oklch(72% 0.19 145);
+            color: var(--color-ok);
         }
 
         /* ─── Title ─── */

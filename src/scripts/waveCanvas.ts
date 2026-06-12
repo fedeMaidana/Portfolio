@@ -1,5 +1,7 @@
 let currentWorker: Worker | null = null;
 let resizeHandler: (() => void) | null = null;
+let schemeQuery: MediaQueryList | null = null;
+let schemeHandler: ((e: MediaQueryListEvent) => void) | null = null;
 let motionQuery: MediaQueryList | null = null;
 let motionHandler: ((e: MediaQueryListEvent) => void) | null = null;
 let smallQuery: MediaQueryList | null = null;
@@ -16,6 +18,11 @@ function cleanup() {
     if (resizeHandler) {
         window.removeEventListener('resize', resizeHandler);
         resizeHandler = null;
+    }
+    if (schemeQuery && schemeHandler) {
+        schemeQuery.removeEventListener('change', schemeHandler);
+        schemeHandler = null;
+        schemeQuery = null;
     }
     if (motionQuery && motionHandler) {
         motionQuery.removeEventListener('change', motionHandler);
@@ -74,6 +81,20 @@ function initWave() {
         }, 100);
     };
     window.addEventListener('resize', resizeHandler);
+
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    schemeQuery = darkScheme;
+
+    const sendTheme = () => {
+        worker.postMessage({
+            type: 'theme',
+            payload: { theme: darkScheme.matches ? 'dark' : 'light' },
+        });
+    };
+
+    schemeHandler = sendTheme;
+    darkScheme.addEventListener('change', schemeHandler);
+    sendTheme();
 
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const small = window.matchMedia('(max-width: 600px)');

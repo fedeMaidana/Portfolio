@@ -150,7 +150,7 @@ const socials = [
 
         .field input:user-invalid,
         .field textarea:user-invalid {
-            border-color: color-mix(in srgb, oklch(63% 0.21 25), transparent 30%);
+            border-color: color-mix(in srgb, var(--color-error), transparent 30%);
         }
 
         .botcheck {
@@ -224,11 +224,11 @@ const socials = [
         }
 
         .form-status[data-kind='ok'] {
-            color: oklch(72% 0.19 145);
+            color: var(--color-ok);
         }
 
         .form-status[data-kind='error'] {
-            color: oklch(70% 0.19 25);
+            color: var(--color-error);
         }
 
         /* ─── Social links ─── */

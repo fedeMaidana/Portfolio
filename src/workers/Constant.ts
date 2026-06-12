@@ -1,15 +1,29 @@
-import type { GridConfig } from './Types';
+import type { GridConfig, ThemeColors, ThemeName } from './Types';
 
 export const CONFIG = {
-    bg: '#0a0d10',
     grid: { cw: 6, ch: 10 } as GridConfig,
 };
 
-export const FLAG = {
-    celeste: { r: 117, g: 170, b: 219 },
-    white: { r: 236, g: 240, b: 245 },
-    gold: { r: 245, g: 196, b: 84 },
+export const THEMES: Record<ThemeName, ThemeColors> = {
+    dark: {
+        bg: '#0a0d10',
+        palette: [
+            { r: 117, g: 170, b: 219 },
+            { r: 236, g: 240, b: 245 },
+            { r: 245, g: 196, b: 84 },
+        ],
+    },
+    light: {
+        bg: '#f1f4f8',
+        palette: [
+            { r: 64, g: 125, b: 188 },
+            { r: 146, g: 163, b: 184 },
+            { r: 206, g: 148, b: 30 },
+        ],
+    },
+};
 
+export const FLAG = {
     waveAmp: 3.2,
     waveFreq: 7.5,
     waveSpeed: 1.8,
@@ -26,8 +40,6 @@ export const FLAG = {
 export const ALPHA_STEPS = 24;
 
 export const CHARS = ['█', '▓', '▒', '░', '·'] as const;
-
-export const PALETTE = [FLAG.celeste, FLAG.white, FLAG.gold] as const;
 
 export const COLOR_INDEX = {
     celeste: 0,

@@ -1,5 +1,5 @@
-import { ALPHA_STEPS, CHARS, PALETTE } from './Constant';
-import type { GridConfig } from './Types';
+import { ALPHA_STEPS, CHARS } from './Constant';
+import type { GridConfig, RGB } from './Types';
 
 const PAD = 4;
 
@@ -9,18 +9,18 @@ export class GlyphAtlas {
     private readonly cellH: number;
     private readonly buckets: number[][];
 
-    constructor(grid: GridConfig) {
+    constructor(grid: GridConfig, palette: readonly RGB[]) {
         this.cellW = grid.cw + PAD * 2;
         this.cellH = grid.ch + PAD * 2;
 
-        this.atlas = new OffscreenCanvas(this.cellW * CHARS.length, this.cellH * PALETTE.length);
+        this.atlas = new OffscreenCanvas(this.cellW * CHARS.length, this.cellH * palette.length);
         const ctx = this.atlas.getContext('2d');
 
         if (ctx) {
             ctx.font = `${grid.ch * 0.95}px "Space Mono", monospace`;
             ctx.textBaseline = 'top';
 
-            PALETTE.forEach((color, row) => {
+            palette.forEach((color, row) => {
                 ctx.fillStyle = `rgb(${color.r},${color.g},${color.b})`;
                 CHARS.forEach((char, col) => {
                     ctx.fillText(char, col * this.cellW + PAD, row * this.cellH + PAD);
@@ -29,7 +29,7 @@ export class GlyphAtlas {
         }
 
         this.buckets = Array.from(
-            { length: CHARS.length * PALETTE.length * ALPHA_STEPS },
+            { length: CHARS.length * palette.length * ALPHA_STEPS },
             (): number[] => []
         );
     }

@@ -1,6 +1,6 @@
-import { CONFIG } from './Constant';
+import { CONFIG, THEMES } from './Constant';
 import { FlagRenderer } from './renderers/FlagRenderer';
-import type { GridConfig } from './Types';
+import type { GridConfig, ThemeName } from './Types';
 
 export class WaveScene {
     private ctx: OffscreenCanvasRenderingContext2D;
@@ -10,6 +10,7 @@ export class WaveScene {
     private reducedMotion = false;
     private hidden = false;
     private animationFrameId = 0;
+    private theme: ThemeName = 'dark';
 
     private static readonly FRAME_MS = 1000 / 24;
     private static readonly SPEED = 0.00036;
@@ -37,6 +38,13 @@ export class WaveScene {
         this.H = height;
         this.dpr = dpr;
         this.applyResize();
+    }
+
+    public setTheme(theme: ThemeName) {
+        if (theme === this.theme) return;
+        this.theme = theme;
+
+        if (this.reducedMotion || this.hidden) this.drawFrame();
     }
 
     public setReducedMotion(reduces: boolean) {
@@ -93,10 +101,10 @@ export class WaveScene {
     }
 
     private drawFrame() {
-        this.ctx.fillStyle = CONFIG.bg;
+        this.ctx.fillStyle = THEMES[this.theme].bg;
         this.ctx.fillRect(0, 0, this.W, this.H);
 
-        this.flagRenderer.draw(this.t, this.grid, this.W, this.H);
+        this.flagRenderer.draw(this.t, this.grid, this.W, this.H, this.theme);
     }
 
     private gridForSize(): GridConfig {
