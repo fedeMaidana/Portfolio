@@ -2,7 +2,11 @@ let currentWorker: Worker | null = null;
 let resizeHandler: (() => void) | null = null;
 let motionQuery: MediaQueryList | null = null;
 let motionHandler: ((e: MediaQueryListEvent) => void) | null = null;
+let smallQuery: MediaQueryList | null = null;
+let smallHandler: ((e: MediaQueryListEvent) => void) | null = null;
 let visibilityHandler: (() => void) | null = null;
+
+const DPR = 1;
 
 function cleanup() {
     if (currentWorker) {
@@ -17,6 +21,11 @@ function cleanup() {
         motionQuery.removeEventListener('change', motionHandler);
         motionHandler = null;
         motionQuery = null;
+    }
+    if (smallQuery && smallHandler) {
+        smallQuery.removeEventListener('change', smallHandler);
+        smallHandler = null;
+        smallQuery = null;
     }
     if (visibilityHandler) {
         document.removeEventListener('visibilitychange', visibilityHandler);
@@ -37,8 +46,6 @@ function initWave() {
     });
     currentWorker = worker;
 
-    const getDpr = () => Math.min(window.devicePixelRatio || 1, 1.25);
-
     worker.postMessage(
         {
             type: 'init',
@@ -46,7 +53,7 @@ function initWave() {
                 canvas: offscreen,
                 width: window.innerWidth,
                 height: window.innerHeight,
-                dpr: getDpr(),
+                dpr: DPR,
             },
         },
         [offscreen]
@@ -61,22 +68,30 @@ function initWave() {
                 payload: {
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    dpr: getDpr(),
+                    dpr: DPR,
                 },
             });
         }, 100);
     };
     window.addEventListener('resize', resizeHandler);
 
-    motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    motionHandler = (e: MediaQueryListEvent) => {
-        worker.postMessage({ type: 'motion-preference', payload: { reduces: e.matches } });
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const small = window.matchMedia('(max-width: 600px)');
+    motionQuery = motion;
+    smallQuery = small;
+
+    const sendMotionPreference = () => {
+        worker.postMessage({
+            type: 'motion-preference',
+            payload: { reduces: motion.matches || small.matches },
+        });
     };
-    motionQuery.addEventListener('change', motionHandler);
-    worker.postMessage({
-        type: 'motion-preference',
-        payload: { reduces: motionQuery.matches },
-    });
+
+    motionHandler = sendMotionPreference;
+    smallHandler = sendMotionPreference;
+    motion.addEventListener('change', motionHandler);
+    small.addEventListener('change', smallHandler);
+    sendMotionPreference();
 
     visibilityHandler = () => {
         worker.postMessage({ type: 'visibility', payload: { hidden: document.hidden } });

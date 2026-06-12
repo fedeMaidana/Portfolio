@@ -5,10 +5,14 @@ import type { GridConfig } from './Types';
 export class WaveScene {
     private ctx: OffscreenCanvasRenderingContext2D;
 
-    private tick: number = 0;
-    private reducedMotion: boolean = false;
-    private hidden: boolean = false;
-    private animationFrameId: number = 0;
+    private t = 0;
+    private lastFrame = 0;
+    private reducedMotion = false;
+    private hidden = false;
+    private animationFrameId = 0;
+
+    private static readonly FRAME_MS = 1000 / 24;
+    private static readonly SPEED = 0.00036;
 
     private grid: GridConfig = CONFIG.grid;
     private flagRenderer: FlagRenderer;
@@ -56,20 +60,21 @@ export class WaveScene {
         }
     }
 
-    public render() {
+    public render(now: number = performance.now()) {
         if (this.reducedMotion || this.hidden) {
             this.animationFrameId = 0;
             return;
         }
 
-        if (this.tick++ % CONFIG.frameSkip !== 0) {
-            this.animationFrameId = requestAnimationFrame(this.render);
-            return;
-        }
-
-        this.drawFrame();
-
         this.animationFrameId = requestAnimationFrame(this.render);
+
+        const elapsed = now - this.lastFrame;
+        if (elapsed < WaveScene.FRAME_MS) return;
+
+        this.lastFrame = now - (elapsed % WaveScene.FRAME_MS);
+
+        this.t += Math.min(elapsed, 100) * WaveScene.SPEED;
+        this.drawFrame();
     }
 
     // ── Privado ───────────────────────────────
@@ -91,11 +96,11 @@ export class WaveScene {
         this.ctx.fillStyle = CONFIG.bg;
         this.ctx.fillRect(0, 0, this.W, this.H);
 
-        this.flagRenderer.draw(this.tick * 0.006, this.grid, this.W, this.H);
+        this.flagRenderer.draw(this.t, this.grid, this.W, this.H);
     }
 
     private gridForSize(): GridConfig {
-        return this.W < 768 ? { cw: 6, ch: 10 } : { cw: 4, ch: 7 };
+        return this.W < 768 ? { cw: 8, ch: 14 } : { cw: 6, ch: 10 };
     }
 
     private applyResize() {

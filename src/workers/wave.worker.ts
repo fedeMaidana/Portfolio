@@ -1,8 +1,12 @@
 import spaceMonoUrl from '@fontsource/space-mono/files/space-mono-latin-400-normal.woff2?url';
-import type { WorkerMessage } from './Types';
+import type { CanvasResize, WorkerMessage } from './Types';
 import { WaveScene } from './WaveScene';
 
 let scene: WaveScene | null = null;
+
+let pendingResize: CanvasResize | null = null;
+let pendingReduced: boolean | null = null;
+let pendingHidden: boolean | null = null;
 
 const fontReady: Promise<void> = (async () => {
     try {
@@ -19,15 +23,24 @@ self.onmessage = async ({ data }: MessageEvent<WorkerMessage>) => {
         case 'init':
             await fontReady;
             scene = new WaveScene(payload.canvas, payload.width, payload.height, payload.dpr);
+
+            if (pendingResize) {
+                scene.resize(pendingResize.width, pendingResize.height, pendingResize.dpr);
+            }
+            if (pendingReduced !== null) scene.setReducedMotion(pendingReduced);
+            if (pendingHidden !== null) scene.setVisibility(pendingHidden);
             break;
         case 'resize':
-            scene?.resize(payload.width, payload.height, payload.dpr);
+            if (scene) scene.resize(payload.width, payload.height, payload.dpr);
+            else pendingResize = payload;
             break;
         case 'motion-preference':
-            scene?.setReducedMotion(payload.reduces);
+            if (scene) scene.setReducedMotion(payload.reduces);
+            else pendingReduced = payload.reduces;
             break;
         case 'visibility':
-            scene?.setVisibility(payload.hidden);
+            if (scene) scene.setVisibility(payload.hidden);
+            else pendingHidden = payload.hidden;
             break;
     }
 };

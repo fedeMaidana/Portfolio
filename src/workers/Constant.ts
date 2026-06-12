@@ -1,9 +1,8 @@
 import type { GridConfig } from './Types';
 
 export const CONFIG = {
-    frameSkip: 2,
     bg: '#0a0d10',
-    grid: { cw: 4, ch: 7 } as GridConfig,
+    grid: { cw: 6, ch: 10 } as GridConfig,
 };
 
 export const FLAG = {
