@@ -28,6 +28,41 @@ const MESSAGES: Record<Lang, { sending: string; ok: string; error: string; netwo
     },
 };
 
+interface FieldErrors {
+    name: string;
+    emailRequired: string;
+    emailInvalid: string;
+    message: string;
+}
+
+const ERRORS: Record<Lang, FieldErrors> = {
+    es: {
+        name: 'Ingresá tu nombre.',
+        emailRequired: 'Ingresá tu correo.',
+        emailInvalid: 'Ingresá un correo válido.',
+        message: 'Escribí tu mensaje.',
+    },
+    en: {
+        name: 'Enter your name.',
+        emailRequired: 'Enter your email.',
+        emailInvalid: 'Enter a valid email.',
+        message: 'Write your message.',
+    },
+    fr: {
+        name: 'Saisissez votre nom.',
+        emailRequired: 'Saisissez votre e-mail.',
+        emailInvalid: 'Saisissez un e-mail valide.',
+        message: 'Écrivez votre message.',
+    },
+};
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const FIELDS = ['name', 'email', 'message'] as const;
+type FieldName = (typeof FIELDS)[number];
+
+type FieldInput = HTMLInputElement | HTMLTextAreaElement;
+
 function pageLang(): Lang {
     const lang = document.documentElement.lang;
     return lang === 'en' || lang === 'fr' ? lang : 'es';
@@ -39,6 +74,77 @@ function setStatus(el: HTMLElement | null, kind: '' | 'ok' | 'error', message: s
     el.dataset.kind = kind;
 }
 
+function fieldEls(
+    form: HTMLFormElement,
+    name: FieldName
+): { input: FieldInput; error: HTMLElement } | null {
+    const input = form.querySelector<FieldInput>(`[name="${name}"]`);
+    const error = form.querySelector<HTMLElement>(`#cf-${name}-error`);
+    return input && error ? { input, error } : null;
+}
+
+function errorFor(input: FieldInput, errors: FieldErrors): string {
+    const value = input.value.trim();
+    switch (input.name) {
+        case 'name':
+            return value ? '' : errors.name;
+        case 'email':
+            if (!value) return errors.emailRequired;
+            return EMAIL_RE.test(value) ? '' : errors.emailInvalid;
+        case 'message':
+            return value ? '' : errors.message;
+        default:
+            return '';
+    }
+}
+
+function setFieldError(input: FieldInput, error: HTMLElement, msg: string): void {
+    if (msg) {
+        input.setAttribute('aria-invalid', 'true');
+        error.textContent = msg;
+    } else {
+        input.removeAttribute('aria-invalid');
+        error.textContent = '';
+    }
+}
+
+function isFormValid(form: HTMLFormElement): boolean {
+    const errors = ERRORS[pageLang()];
+    return FIELDS.every((name) => {
+        const els = fieldEls(form, name);
+        return els ? errorFor(els.input, errors) === '' : true;
+    });
+}
+
+function updateButtonState(form: HTMLFormElement): void {
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!button) return;
+    button.setAttribute('aria-disabled', isFormValid(form) ? 'false' : 'true');
+}
+
+function validateForm(form: HTMLFormElement): boolean {
+    const errors = ERRORS[pageLang()];
+    let firstInvalid: FieldInput | null = null;
+
+    for (const name of FIELDS) {
+        const els = fieldEls(form, name);
+        if (!els) continue;
+        const msg = errorFor(els.input, errors);
+        setFieldError(els.input, els.error, msg);
+        if (msg && !firstInvalid) firstInvalid = els.input;
+    }
+
+    firstInvalid?.focus();
+    return firstInvalid === null;
+}
+
+function clearErrors(form: HTMLFormElement): void {
+    for (const name of FIELDS) {
+        const els = fieldEls(form, name);
+        if (els) setFieldError(els.input, els.error, '');
+    }
+}
+
 async function handleSubmit(e: Event): Promise<void> {
     e.preventDefault();
 
@@ -48,9 +154,8 @@ async function handleSubmit(e: Event): Promise<void> {
     const label = form.querySelector<HTMLElement>('.btn-label');
     if (!button) return;
 
-    // Validación nativa: deja que el navegador marque los campos requeridos.
-    if (!form.checkValidity()) {
-        form.reportValidity();
+    if (!validateForm(form)) {
+        setStatus(status, '', '');
         return;
     }
 
@@ -76,6 +181,8 @@ async function handleSubmit(e: Event): Promise<void> {
 
         if (res.ok && result.success) {
             form.reset();
+            clearErrors(form);
+            updateButtonState(form);
             setStatus(status, 'ok', messages.ok);
         } else {
             setStatus(status, 'error', messages.error);
@@ -94,6 +201,18 @@ function initContactForm(): void {
 
     form.dataset.bound = 'true';
     form.addEventListener('submit', handleSubmit);
+
+    updateButtonState(form);
+
+    for (const name of FIELDS) {
+        const els = fieldEls(form, name);
+        if (!els) continue;
+        els.input.addEventListener('input', () => {
+            updateButtonState(form);
+            if (els.input.getAttribute('aria-invalid') !== 'true') return;
+            setFieldError(els.input, els.error, errorFor(els.input, ERRORS[pageLang()]));
+        });
+    }
 }
 
 initContactForm();
