@@ -1,7 +1,8 @@
+import type { ThemeName } from '../workers/Types';
+
 let currentWorker: Worker | null = null;
 let resizeHandler: (() => void) | null = null;
-let schemeQuery: MediaQueryList | null = null;
-let schemeHandler: ((e: MediaQueryListEvent) => void) | null = null;
+let themeChangeHandler: ((e: Event) => void) | null = null;
 let motionQuery: MediaQueryList | null = null;
 let motionHandler: ((e: MediaQueryListEvent) => void) | null = null;
 let smallQuery: MediaQueryList | null = null;
@@ -9,6 +10,12 @@ let smallHandler: ((e: MediaQueryListEvent) => void) | null = null;
 let visibilityHandler: (() => void) | null = null;
 
 const DPR = 1;
+
+function readTheme(): ThemeName {
+    const theme = document.documentElement.dataset.theme;
+    if (theme === 'light' || theme === 'dark') return theme;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 
 function cleanup() {
     if (currentWorker) {
@@ -19,10 +26,9 @@ function cleanup() {
         window.removeEventListener('resize', resizeHandler);
         resizeHandler = null;
     }
-    if (schemeQuery && schemeHandler) {
-        schemeQuery.removeEventListener('change', schemeHandler);
-        schemeHandler = null;
-        schemeQuery = null;
+    if (themeChangeHandler) {
+        document.removeEventListener('theme-change', themeChangeHandler);
+        themeChangeHandler = null;
     }
     if (motionQuery && motionHandler) {
         motionQuery.removeEventListener('change', motionHandler);
@@ -82,19 +88,15 @@ function initWave() {
     };
     window.addEventListener('resize', resizeHandler);
 
-    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    schemeQuery = darkScheme;
+    worker.postMessage({ type: 'theme', payload: { theme: readTheme() } });
 
-    const sendTheme = () => {
-        worker.postMessage({
-            type: 'theme',
-            payload: { theme: darkScheme.matches ? 'dark' : 'light' },
-        });
+    themeChangeHandler = (e: Event) => {
+        const theme = (e as CustomEvent<ThemeName>).detail;
+        if (theme === 'light' || theme === 'dark') {
+            worker.postMessage({ type: 'theme', payload: { theme } });
+        }
     };
-
-    schemeHandler = sendTheme;
-    darkScheme.addEventListener('change', schemeHandler);
-    sendTheme();
+    document.addEventListener('theme-change', themeChangeHandler);
 
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const small = window.matchMedia('(max-width: 600px)');
