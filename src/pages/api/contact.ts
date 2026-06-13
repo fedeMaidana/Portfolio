@@ -1,5 +1,14 @@
+import { logError } from '@/utils/logger';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import type { APIRoute } from 'astro';
-import { CONTACT_FROM_EMAIL, CONTACT_TO_EMAIL, RESEND_API_KEY } from 'astro:env/server';
+import {
+    CONTACT_FROM_EMAIL,
+    CONTACT_TO_EMAIL,
+    RESEND_API_KEY,
+    UPSTASH_REDIS_REST_TOKEN,
+    UPSTASH_REDIS_REST_URL,
+} from 'astro:env/server';
 import { Resend } from 'resend';
 import { z } from 'zod';
 
@@ -28,7 +37,51 @@ const json = (body: Record<string, unknown>, status: number): Response =>
         headers: { 'Content-Type': 'application/json' },
     });
 
+// ── Rate limiting (Upstash) ────────────────────────────────
+
+let ratelimit: Ratelimit | null = null;
+
+function getRatelimit(): Ratelimit | null {
+    if (ratelimit) return ratelimit;
+    if (!UPSTASH_REDIS_REST_URL || !UPSTASH_REDIS_REST_TOKEN) return null;
+
+    ratelimit = new Ratelimit({
+        redis: new Redis({
+            url: UPSTASH_REDIS_REST_URL,
+            token: UPSTASH_REDIS_REST_TOKEN,
+        }),
+        limiter: Ratelimit.slidingWindow(5, '10 m'),
+        prefix: 'contact-form',
+    });
+
+    return ratelimit;
+}
+
+function clientIp(request: Request): string {
+    const forwarded = request.headers.get('x-forwarded-for');
+    const first = forwarded?.split(',')[0]?.trim();
+    if (first) return first;
+
+    const real = request.headers.get('x-real-ip')?.trim();
+    return real || 'unknown';
+}
+
 export const POST: APIRoute = async ({ request }) => {
+    const limiter = getRatelimit();
+    if (limiter) {
+        try {
+            const { success } = await limiter.limit(clientIp(request));
+            if (!success) {
+                return json(
+                    { success: false, error: 'Demasiados intentos. Esperá unos minutos.' },
+                    429
+                );
+            }
+        } catch (error) {
+            logError('contact:ratelimit', error);
+        }
+    }
+
     let payload: unknown;
     try {
         payload = await request.json();

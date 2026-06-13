@@ -32,6 +32,16 @@ export default defineConfig({
                 access: 'secret',
                 default: 'Portfolio <onboarding@resend.dev>',
             }),
+            UPSTASH_REDIS_REST_URL: envField.string({
+                context: 'server',
+                access: 'secret',
+                optional: true,
+            }),
+            UPSTASH_REDIS_REST_TOKEN: envField.string({
+                context: 'server',
+                access: 'secret',
+                optional: true,
+            }),
         },
     },
     vite: {

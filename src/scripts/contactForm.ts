@@ -7,24 +7,30 @@ interface ContactResponse {
 
 type Lang = 'es' | 'en' | 'fr';
 
-const MESSAGES: Record<Lang, { sending: string; ok: string; error: string; network: string }> = {
+const MESSAGES: Record<
+    Lang,
+    { sending: string; ok: string; error: string; network: string; rateLimit: string }
+> = {
     es: {
         sending: 'Enviando…',
         ok: '¡Listo! Te respondo en menos de 24h.',
         error: 'No se pudo enviar. Probá de nuevo o escribime por LinkedIn.',
         network: 'Falló la conexión. Revisá tu red e intentá otra vez.',
+        rateLimit: 'Demasiados intentos. Esperá unos minutos y probá de nuevo.',
     },
     en: {
         sending: 'Sending…',
         ok: "Done! I'll get back to you within 24h.",
         error: "Couldn't send the message. Try again or reach me on LinkedIn.",
         network: 'Connection failed. Check your network and try again.',
+        rateLimit: 'Too many attempts. Wait a few minutes and try again.',
     },
     fr: {
         sending: 'Envoi…',
         ok: 'C’est fait ! Je vous réponds en moins de 24h.',
         error: 'Échec de l’envoi. Réessayez ou écrivez-moi sur LinkedIn.',
         network: 'La connexion a échoué. Vérifiez votre réseau et réessayez.',
+        rateLimit: 'Trop de tentatives. Attendez quelques minutes et réessayez.',
     },
 };
 
@@ -184,6 +190,8 @@ async function handleSubmit(e: Event): Promise<void> {
             clearErrors(form);
             updateButtonState(form);
             setStatus(status, 'ok', messages.ok);
+        } else if (res.status === 429) {
+            setStatus(status, 'error', messages.rateLimit);
         } else {
             setStatus(status, 'error', messages.error);
         }
