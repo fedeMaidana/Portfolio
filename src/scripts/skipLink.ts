@@ -1,13 +1,14 @@
-function initSkipLink() {
-    const skipLink = document.querySelector('.skip-to-content');
-    const mainContent = document.querySelector('#main-content') as HTMLElement | null;
+function initSkipLink(): void {
+    const skipLink = document.querySelector<HTMLAnchorElement>('.skip-to-content');
+    const mainContent = document.querySelector<HTMLElement>('#main-content');
+    if (!skipLink || !mainContent) return;
+    if (skipLink.dataset.bound === 'true') return;
 
-    if (skipLink && mainContent) {
-        skipLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            mainContent.focus();
-        });
-    }
+    skipLink.dataset.bound = 'true';
+    skipLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        mainContent.focus();
+    });
 }
 
 initSkipLink();

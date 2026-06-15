@@ -1,5 +1,6 @@
 import { GITHUB_API_BASE } from '@/config';
 import { withFallback } from '@/utils/logger';
+import { GITHUB_TOKEN } from 'astro:env/server';
 
 interface GitHubRepo {
     stargazers_count: number;
@@ -12,13 +13,11 @@ function isGitHubUrl(url: string): boolean {
 }
 
 function fetchRepoStars(repoPath: string): Promise<number> {
-    const token = import.meta.env.GITHUB_TOKEN;
-
     return withFallback(
         `getRepoStars:${repoPath}`,
         async () => {
             const res = await fetch(`${GITHUB_API_BASE}/repos/${repoPath}`, {
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
+                headers: GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {},
             });
             if (!res.ok) return 0;
 

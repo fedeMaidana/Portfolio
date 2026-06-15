@@ -16,7 +16,7 @@ export const prerender = false;
 
 const ContactSchema = z.object({
     name: z.string().trim().min(1).max(100),
-    email: z.string().trim().email().max(150),
+    email: z.string().trim().pipe(z.email().max(150)),
     message: z.string().trim().min(1).max(5000),
     botcheck: z.string().optional(),
 });

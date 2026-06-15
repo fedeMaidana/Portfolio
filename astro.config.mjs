@@ -29,6 +29,7 @@ export default defineConfig({
             RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),
             CONTACT_TO_EMAIL: envField.string({ context: 'server', access: 'secret' }),
             CONTACT_FROM_EMAIL: envField.string({ context: 'server', access: 'secret' }),
+            GITHUB_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
             UPSTASH_REDIS_REST_URL: envField.string({
                 context: 'server',
                 access: 'secret',
