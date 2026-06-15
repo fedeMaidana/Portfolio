@@ -40,10 +40,21 @@ const json = (body: Record<string, unknown>, status: number): Response =>
 // ── Rate limiting (Upstash) ────────────────────────────────
 
 let ratelimit: Ratelimit | null = null;
+let limiterWarned = false;
 
 function getRatelimit(): Ratelimit | null {
     if (ratelimit) return ratelimit;
-    if (!UPSTASH_REDIS_REST_URL || !UPSTASH_REDIS_REST_TOKEN) return null;
+
+    if (!UPSTASH_REDIS_REST_URL || !UPSTASH_REDIS_REST_TOKEN) {
+        if (!limiterWarned) {
+            limiterWarned = true;
+            logError(
+                'contact:ratelimit',
+                new Error('Upstash no configurado: el formulario corre sin rate limiting.')
+            );
+        }
+        return null;
+    }
 
     ratelimit = new Ratelimit({
         redis: new Redis({

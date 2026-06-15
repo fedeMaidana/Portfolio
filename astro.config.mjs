@@ -28,11 +28,7 @@ export default defineConfig({
         schema: {
             RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),
             CONTACT_TO_EMAIL: envField.string({ context: 'server', access: 'secret' }),
-            CONTACT_FROM_EMAIL: envField.string({
-                context: 'server',
-                access: 'secret',
-                default: 'Portfolio <onboarding@resend.dev>',
-            }),
+            CONTACT_FROM_EMAIL: envField.string({ context: 'server', access: 'secret' }),
             UPSTASH_REDIS_REST_URL: envField.string({
                 context: 'server',
                 access: 'secret',
