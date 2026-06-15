@@ -341,6 +341,37 @@ const homeHref = pathForLocale('/', lang);
         text-decoration-color: var(--accent);
     }
 
+    /* ─── Images ─── */
+
+    .prose :global(p:has(img)) {
+        margin-block: 2.5rem;
+    }
+
+    .prose :global(img) {
+        margin-inline: auto;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--card-border);
+        background-color: var(--card-bg);
+        box-shadow: 0 8px 24px color-mix(in srgb, var(--text), transparent 90%);
+        transition:
+            transform var(--transition-base),
+            box-shadow var(--transition-base),
+            border-color var(--transition-base);
+    }
+
+    @media (hover: hover) {
+        .prose :global(img):hover {
+            border-color: var(--accent-hover-border);
+            box-shadow: 0 16px 36px color-mix(in srgb, var(--text), transparent 82%);
+        }
+    }
+
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+        .prose :global(img):hover {
+            transform: translateY(-4px);
+        }
+    }
+
     @media (max-width: 600px) {
         /* Mismo shell que el index: un solo bloque a pantalla completa */
         .page-shell {
@@ -385,6 +416,10 @@ const homeHref = pathForLocale('/', lang);
 
         .prose :global(p) {
             margin-block-end: 1.25rem;
+        }
+
+        .prose :global(p:has(img)) {
+            margin-block: 1.75rem;
         }
 
         .prose :global(h2) {
