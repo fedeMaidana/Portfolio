@@ -79,7 +79,19 @@
     pre {
         font-family: var(--font-mono);
         font-size: 0.9em;
+    }
+
+    code {
         white-space: nowrap;
+    }
+
+    pre {
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    pre code {
+        white-space: inherit;
     }
 
     :focus-visible {
