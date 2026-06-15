@@ -1,21 +1,10 @@
 ---
 import ProjectDetail from '@/components/features/projects/ProjectDetail.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getLocalizedProjectPaths } from '@/services/content';
+import { type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
-    const all = await getCollection('projects');
-    const base = all.filter((project: CollectionEntry<'projects'>) => !project.id.includes('/'));
-
-    return base.map((esProject: CollectionEntry<'projects'>) => {
-        const localized = all.find(
-            (project: CollectionEntry<'projects'>) => project.id === `en/${esProject.id}`
-        );
-
-        return {
-            params: { slug: esProject.id },
-            props: { project: localized ?? esProject },
-        };
-    });
+    return getLocalizedProjectPaths('en');
 }
 
 interface Props {

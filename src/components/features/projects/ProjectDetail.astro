@@ -15,7 +15,7 @@ const t = useTranslations(lang);
 const { project } = Astro.props;
 const { Content } = await render(project);
 
-const isCurrent = project.data.number === '#001';
+const isCurrent = project.data.current;
 const homeHref = pathForLocale('/', lang);
 ---
 
@@ -53,7 +53,7 @@ const homeHref = pathForLocale('/', lang);
 
                 <div class="actions">
                     {
-                        !isCurrent && project.data.link && project.data.link !== '#' && (
+                        !isCurrent && project.data.link && (
                             <a
                                 href={project.data.link}
                                 target="_blank"
@@ -65,7 +65,7 @@ const homeHref = pathForLocale('/', lang);
                         )
                     }
                     {
-                        project.data.repoUrl && project.data.repoUrl !== '#' && (
+                        project.data.repoUrl && (
                             <a
                                 href={project.data.repoUrl}
                                 target="_blank"

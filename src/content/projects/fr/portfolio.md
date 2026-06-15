@@ -6,6 +6,7 @@ description: 'Mon portfolio personnel construit avec Astro.'
 link: 'https://maidana.dev'
 repoUrl: 'https://github.com/fedeMaidana/Portfolio'
 tags: ['Astro', 'TypeScript', 'Bun']
+current: true
 ---
 
 Décisions techniques :

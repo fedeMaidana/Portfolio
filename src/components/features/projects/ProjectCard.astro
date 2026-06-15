@@ -18,11 +18,10 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const { project } = Astro.props;
-const { title, number, link = '#', repoUrl = '#', description, category } = project.data;
-const isCurrent = number === '#001';
+const { title, number, link, repoUrl, description, category, current: isCurrent } = project.data;
 
-const hasLink = !isCurrent && link !== '#';
-const hasRepo = repoUrl !== '#';
+const hasLink = !isCurrent && Boolean(link);
+const hasRepo = Boolean(repoUrl);
 const showDivider = hasRepo && (isCurrent || hasLink);
 
 const slug = projectSlug(project);
@@ -32,11 +31,11 @@ const softwareSchema = getSoftwareSchema({
     title,
     description,
     category,
-    url: link !== '#' ? link : new URL(detailHref, Astro.url).href,
+    url: link ?? new URL(detailHref, Astro.url).href,
     repoUrl,
 });
 
-const stars = await getRepoStars(repoUrl);
+const stars = repoUrl ? await getRepoStars(repoUrl) : 0;
 ---
 
 <article class="work-card">

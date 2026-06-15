@@ -1,19 +1,11 @@
 ---
 import ProjectDetail from '@/components/features/projects/ProjectDetail.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { DEFAULT_LOCALE } from '@/i18n/ui';
+import { getLocalizedProjectPaths } from '@/services/content';
+import { type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
-    // El contenido en español vive en la raíz de la colección (ids sin
-    // prefijo de locale), así las URLs históricas /projects/* no cambian.
-    const projects = await getCollection(
-        'projects',
-        (project: CollectionEntry<'projects'>) => !project.id.includes('/')
-    );
-
-    return projects.map((project: CollectionEntry<'projects'>) => ({
-        params: { slug: project.id },
-        props: { project },
-    }));
+    return getLocalizedProjectPaths(DEFAULT_LOCALE);
 }
 
 interface Props {

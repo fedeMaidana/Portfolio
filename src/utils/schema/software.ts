@@ -3,7 +3,7 @@ export function getSoftwareSchema(params: {
     description: string;
     category: string;
     url: string | URL;
-    repoUrl?: string;
+    repoUrl: string | undefined;
 }) {
     return JSON.stringify({
         '@context': 'https://schema.org',
@@ -13,7 +13,7 @@ export function getSoftwareSchema(params: {
         applicationCategory: params.category,
         operatingSystem: 'Web, Windows, Linux, macOS',
         url: params.url,
-        codeRepository: params.repoUrl !== '#' ? params.repoUrl : undefined,
+        codeRepository: params.repoUrl,
         author: {
             '@type': 'Person',
             name: 'Federico Maidana',
