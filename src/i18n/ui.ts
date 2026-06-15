@@ -11,6 +11,7 @@ export const ui = {
         'meta.personDescription': 'Backend Developer enfocado en rendimiento y código seguro.',
 
         'skip.label': 'Saltar al contenido principal',
+        'backToTop.aria': 'Volver arriba',
 
         'nav.aria': 'Navegación principal',
         'nav.logo': 'Portafolio',
@@ -69,6 +70,7 @@ export const ui = {
         'meta.personDescription': 'Backend Developer focused on performance and safe code.',
 
         'skip.label': 'Skip to main content',
+        'backToTop.aria': 'Back to top',
 
         'nav.aria': 'Main navigation',
         'nav.logo': 'Portfolio',
@@ -127,6 +129,7 @@ export const ui = {
         'meta.personDescription': 'Développeur backend axé sur la performance et le code sûr.',
 
         'skip.label': 'Aller au contenu principal',
+        'backToTop.aria': 'Revenir en haut',
 
         'nav.aria': 'Navigation principale',
         'nav.logo': 'Portfolio',

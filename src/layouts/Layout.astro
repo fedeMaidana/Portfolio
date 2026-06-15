@@ -1,6 +1,7 @@
 ---
 import '@/assets/styles/global.css';
 import Fonts from '@/components/ui/Fonts.astro';
+import BackToTop from '@/components/ui/BackToTop.astro';
 import NoiseOverlay from '@/components/ui/NoiseOverlay.astro';
 import SkipLink from '@/components/ui/SkipLink.astro';
 import WaveCanvas from '@/components/ui/WaveCanvas.astro';
@@ -89,6 +90,7 @@ const { title = t('meta.title'), description = t('meta.description') } = Astro.p
         <WaveCanvas />
         <SkipLink />
         <slot />
+        <BackToTop />
         <Analytics />
         <SpeedInsights />
     </body>

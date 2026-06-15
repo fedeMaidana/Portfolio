@@ -1,4 +1,5 @@
 ---
+import Nav from '@/components/sections/Nav.astro';
 import Card from '@/components/ui/Card.astro';
 import { getLangFromUrl, pathForLocale, useTranslations } from '@/i18n/utils';
 import Layout from '@/layouts/Layout.astro';
@@ -20,7 +21,8 @@ const homeHref = pathForLocale('/', lang);
 
 <Layout title={`${project.data.title} | Fede Maidana`} description={project.data.description}>
     <div class="page-shell">
-        <main class="project-container">
+        <Nav />
+        <main id="main-content" tabindex="-1" class="project-container">
             <Card tag="header" class="header-card">
                 <a href={homeHref} class="back-link">
                     <span class="back-arrow" aria-hidden="true">←</span>
@@ -94,8 +96,12 @@ const homeHref = pathForLocale('/', lang);
     .project-container {
         max-width: 760px;
         margin: 0 auto;
-        padding: 6rem 2rem 5rem;
+        padding: 2rem 2rem 5rem;
         position: relative;
+    }
+
+    #main-content:focus:not(:focus-visible) {
+        outline: none;
     }
 
     .project-container :global(.glass) {
