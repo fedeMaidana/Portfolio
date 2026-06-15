@@ -32,7 +32,7 @@ const softwareSchema = getSoftwareSchema({
     title,
     description,
     category,
-    url: link !== '#' ? link : Astro.url.href,
+    url: link !== '#' ? link : new URL(detailHref, Astro.url).href,
     repoUrl,
 });
 

@@ -5,14 +5,13 @@ interface GitHubRepo {
     stargazers_count: number;
 }
 
+const starsCache = new Map<string, Promise<number>>();
+
 function isGitHubUrl(url: string): boolean {
     return url.startsWith('https://github.com/');
 }
 
-export async function getRepoStars(repoUrl: string): Promise<number> {
-    if (!isGitHubUrl(repoUrl)) return 0;
-
-    const repoPath = new URL(repoUrl).pathname.slice(1);
+function fetchRepoStars(repoPath: string): Promise<number> {
     const token = import.meta.env.GITHUB_TOKEN;
 
     return withFallback(
@@ -28,4 +27,17 @@ export async function getRepoStars(repoUrl: string): Promise<number> {
         },
         0
     );
+}
+
+export async function getRepoStars(repoUrl: string): Promise<number> {
+    if (!isGitHubUrl(repoUrl)) return 0;
+
+    const repoPath = new URL(repoUrl).pathname.slice(1);
+
+    const cached = starsCache.get(repoPath);
+    if (cached) return cached;
+
+    const pending = fetchRepoStars(repoPath);
+    starsCache.set(repoPath, pending);
+    return pending;
 }

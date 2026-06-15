@@ -1,5 +1,5 @@
 ---
-title: 'Portafolio'
+title: 'Portfolio'
 number: '#001'
 category: 'DeveloperApplication'
 description: 'My personal portfolio built with Astro.'
