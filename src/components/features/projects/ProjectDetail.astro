@@ -3,6 +3,7 @@ import Nav from '@/components/sections/Nav.astro';
 import Card from '@/components/ui/Card.astro';
 import { getLangFromUrl, pathForLocale, useTranslations } from '@/i18n/utils';
 import Layout from '@/layouts/Layout.astro';
+import { getBreadcrumbSchema, getTechArticleSchema } from '@/utils/schema';
 import { render, type CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -17,9 +18,37 @@ const { Content } = await render(project);
 
 const isCurrent = project.data.current;
 const homeHref = pathForLocale('/', lang);
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const homeUrl = new URL(homeHref, Astro.site).href;
+
+const breadcrumbSchema = getBreadcrumbSchema([
+    { name: 'Federico Maidana', url: homeUrl },
+    { name: t('projects.title'), url: homeUrl },
+    { name: project.data.title, url: pageUrl },
+]);
+
+const techArticleSchema = getTechArticleSchema({
+    site: Astro.site,
+    url: pageUrl,
+    headline: project.data.title,
+    description: project.data.description,
+    inLanguage: lang,
+    applicationCategory: project.data.category,
+    operatingSystem: 'Web, Windows, Linux, macOS',
+    keywords: project.data.tags,
+    repoUrl: project.data.repoUrl,
+    datePublished: project.data.datePublished,
+    dateModified: project.data.dateModified,
+});
 ---
 
-<Layout title={`${project.data.title} | Federico Maidana`} description={project.data.description}>
+<Layout
+    title={`${project.data.title} | Federico Maidana`}
+    description={project.data.description}
+    type="article"
+    jsonLd={[breadcrumbSchema, techArticleSchema]}
+>
     <div class="page-shell">
         <Nav />
         <main id="main-content" tabindex="-1" class="project-container">

@@ -14,12 +14,21 @@ import { ClientRouter } from 'astro:transitions';
 interface Props {
     title?: string;
     description?: string;
+    type?: ('website' | 'profile' | 'article') | undefined;
+    image?: string | undefined;
+    jsonLd?: string[] | undefined;
 }
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const { title = t('meta.title'), description = t('meta.description') } = Astro.props;
+const {
+    title = t('meta.title'),
+    description = t('meta.description'),
+    type,
+    image,
+    jsonLd,
+} = Astro.props;
 ---
 
 <html lang={lang}>
@@ -83,7 +92,7 @@ const { title = t('meta.title'), description = t('meta.description') } = Astro.p
 
         <Fonts />
 
-        <SEO title={title} description={description} />
+        <SEO title={title} description={description} type={type} image={image} jsonLd={jsonLd} />
         <ClientRouter />
     </head>
 

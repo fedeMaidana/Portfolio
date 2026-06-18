@@ -19,6 +19,8 @@ const projectsCollection = defineCollection({
             .default('DeveloperApplication'),
         tags: z.array(z.string()).optional(),
         current: z.boolean().default(false),
+        datePublished: z.string().optional(),
+        dateModified: z.string().optional(),
     }),
 });
 

@@ -1,10 +1,15 @@
+import { personId, siteOrigin } from './ids';
+
 export function getPersonSchema(siteUrl: URL | string | undefined, description: string) {
+    const base = siteOrigin(siteUrl);
+
     return JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Person',
+        '@id': personId(siteUrl),
         name: 'Federico Maidana',
-        url: siteUrl,
-        image: siteUrl ? new URL('/pictures/seo-1.jpeg', siteUrl).href : undefined,
+        url: base,
+        image: base ? new URL('/pictures/seo-1.jpeg', base).href : undefined,
         jobTitle: 'Backend Developer',
         description,
         address: {
@@ -15,12 +20,16 @@ export function getPersonSchema(siteUrl: URL | string | undefined, description: 
         },
         knowsAbout: [
             'Rust (Programming Language)',
-            'Iced (Rust library)',
+            'Systems Programming',
             'Backend Development',
             'Frontend Development',
             'Software Architecture',
+            'Wayland',
+            'Hyprland',
+            'GPU Rendering',
+            'Command-Line Interface Design',
         ],
-        sameAs: ['https://www.github.com/fedeMaidana', 'https://www.linkedin.com/in/fede-maidana'],
+        sameAs: ['https://github.com/fedeMaidana', 'https://www.linkedin.com/in/fede-maidana'],
         knowsLanguage: [
             { '@type': 'Language', name: 'Spanish' },
             { '@type': 'Language', name: 'English' },

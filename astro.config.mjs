@@ -14,6 +14,7 @@ export default defineConfig({
     },
     integrations: [
         sitemap({
+            filter: (page) => !page.includes('/api/'),
             i18n: {
                 defaultLocale: 'es',
                 locales: {

@@ -1,12 +1,14 @@
 ---
 import { LOCALES, type Locale } from '@/i18n/ui';
-import { getLangFromUrl, pathForLocale, useTranslations } from '@/i18n/utils';
-import { getPersonSchema } from '@/utils/schema';
+import { getLangFromUrl, pathForLocale, stripLocale, useTranslations } from '@/i18n/utils';
+import { getPersonSchema, getProfilePageSchema, getWebSiteSchema } from '@/utils/schema';
 
 interface Props {
     title?: string;
     description?: string;
-    image?: string;
+    image?: string | undefined;
+    type?: ('website' | 'profile' | 'article') | undefined;
+    jsonLd?: string[] | undefined;
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -16,11 +18,26 @@ const {
     title = t('meta.title'),
     description = t('meta.description'),
     image = '/pictures/seo-1.jpeg',
+    type: typeProp,
+    jsonLd = [],
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const imageURL = new URL(image, Astro.site);
-const personSchema = getPersonSchema(Astro.site, t('meta.personDescription'));
+
+const isHome = stripLocale(Astro.url.pathname) === '/';
+const ogType = typeProp ?? (isHome ? 'profile' : 'website');
+
+const schemas: string[] = [
+    getPersonSchema(Astro.site, t('meta.personDescription')),
+    getWebSiteSchema(Astro.site, 'Federico Maidana', t('meta.personDescription'), lang),
+];
+
+if (isHome) {
+    schemas.push(getProfilePageSchema(Astro.site, canonicalURL, lang));
+}
+
+schemas.push(...jsonLd);
 
 const OG_LOCALE: Record<Locale, string> = {
     es: 'es_AR',
@@ -42,27 +59,43 @@ const defaultHref = new URL(pathForLocale(Astro.url.pathname, 'es'), Astro.site)
 
 <title>{title}</title>
 <meta name="description" content={description} />
-<meta name="robots" content="index, follow" />
+<meta name="author" content="Federico Maidana" />
+<meta
+    name="robots"
+    content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+/>
 <link rel="canonical" href={canonicalURL} />
 
 {alternates.map(({ locale, href }) => <link rel="alternate" hreflang={locale} href={href} />)}
 <link rel="alternate" hreflang="x-default" href={defaultHref} />
 
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
 <meta property="og:site_name" content="Federico Maidana" />
 <meta property="og:locale" content={ogLocale} />
 {ogLocaleAlternates.map((alt) => <meta property="og:locale:alternate" content={alt} />)}
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={imageURL} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="Federico Maidana — Backend Developer" />
 
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={imageURL} />
+{
+    ogType === 'profile' && (
+        <>
+            <meta property="profile:first_name" content="Federico" />
+            <meta property="profile:last_name" content="Maidana" />
+        </>
+    )
+}
 
-<script type="application/ld+json" set:html={personSchema} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageURL} />
+<meta name="twitter:image:alt" content="Federico Maidana — Backend Developer" />
+
+{schemas.map((schema) => <script type="application/ld+json" set:html={schema} />)}
 
 <link rel="sitemap" href="/sitemap-index.xml" />
