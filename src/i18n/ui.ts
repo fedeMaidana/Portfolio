@@ -27,14 +27,14 @@ const es = {
     'hero.photoAlt': 'Foto de Federico Maidana',
 
     'about.title': 'Sobre mí',
-    'about.history': 'Pasé de construir interfaces web a diseñar la logica del backend.',
+    'about.history': 'Pasé de construir interfaces web a diseñar la lógica del backend.',
     'about.focus.1': 'Actualmente mi ecosistema principal es ',
     'about.focus.2':
         '. Me da el control de un lenguaje de bajo nivel sin renunciar a la seguridad de memoria.',
     'about.perspective.1': 'Mi background en ',
     'about.perspective.strong1': 'frontend',
     'about.perspective.2': ' me permite diseñar ',
-    'about.perspective.strong2': "API's",
+    'about.perspective.strong2': 'APIs',
     'about.perspective.3':
         ' y arquitecturas pensadas no solo desde el sistema, sino desde el producto y la experiencia de quien las utiliza.',
 
@@ -49,6 +49,11 @@ const es = {
     'detail.back': 'Volver al inicio',
     'detail.view': 'Ver Proyecto',
     'detail.source': 'Código Fuente',
+
+    'notFound.title': '404 — Página no encontrada | Federico Maidana',
+    'notFound.description': 'La página que buscás no existe.',
+    'notFound.heading': 'Página no encontrada',
+    'notFound.body': 'La página que buscás no existe o fue movida.',
 
     'interests.title': 'Intereses',
 
@@ -112,6 +117,11 @@ const en: Record<UIKey, string> = {
     'detail.view': 'View Project',
     'detail.source': 'Source Code',
 
+    'notFound.title': '404 — Page not found | Federico Maidana',
+    'notFound.description': "The page you're looking for doesn't exist.",
+    'notFound.heading': 'Page not found',
+    'notFound.body': "The page you're looking for doesn't exist or has moved.",
+
     'interests.title': 'Interests',
 
     'contact.title': 'Contact',
@@ -172,6 +182,11 @@ const fr: Record<UIKey, string> = {
     'detail.back': 'Retour à l’accueil',
     'detail.view': 'Voir le projet',
     'detail.source': 'Code source',
+
+    'notFound.title': '404 — Page introuvable | Federico Maidana',
+    'notFound.description': "La page que vous cherchez n'existe pas.",
+    'notFound.heading': 'Page introuvable',
+    'notFound.body': "La page que vous cherchez n'existe pas ou a été déplacée.",
 
     'interests.title': 'Centres d’intérêt',
 

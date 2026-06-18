@@ -1,20 +1,21 @@
 ---
 import Card from '@/components/ui/Card.astro';
+import { DEFAULT_LOCALE } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
 import Layout from '@/layouts/Layout.astro';
+
+const t = useTranslations(DEFAULT_LOCALE);
 ---
 
-<Layout
-    title="404 — Página no encontrada | Federico Maidana"
-    description="La página que buscás no existe."
->
+<Layout title={t('notFound.title')} description={t('notFound.description')}>
     <main class="not-found">
         <Card class="not-found-card">
             <span class="code" aria-hidden="true">404</span>
-            <h1>Página no encontrada</h1>
-            <p>La página que buscás no existe o fue movida.</p>
-            <a href="/" class="home-link">
+            <h1 data-i18n="notFound.heading">{t('notFound.heading')}</h1>
+            <p data-i18n="notFound.body">{t('notFound.body')}</p>
+            <a href="/" class="home-link" data-home-link>
                 <span class="back-arrow" aria-hidden="true">←</span>
-                <span>Volver al inicio</span>
+                <span data-i18n="detail.back">{t('detail.back')}</span>
             </a>
         </Card>
     </main>
@@ -75,3 +76,7 @@ import Layout from '@/layouts/Layout.astro';
         transform: translateX(-4px);
     }
 </style>
+
+<script>
+    import '../scripts/notFound';
+</script>
